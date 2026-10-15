@@ -1,0 +1,50 @@
+# Full stack for machines with Docker. Local dev without Docker: see README (embedded Postgres).
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: iic
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iic}
+      POSTGRES_DB: iic
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iic -d iic"]
+      interval: 5s
+      retries: 10
+    ports: ["5432:5432"]
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://iic:${POSTGRES_PASSWORD:-iic}@db:5432/iic
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      STORAGE_DIR: /data/storage
+    volumes: [storage:/data/storage]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/api/health"]
+      interval: 10s
+    ports: ["4000:4000"]
+
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    environment:
+      API_INTERNAL_URL: http://api:4000
+      NODE_ENV: production
+    depends_on:
+      api: { condition: service_healthy }
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata:
+  storage:

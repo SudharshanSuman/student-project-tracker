@@ -12,7 +12,7 @@ import { prisma } from "../db.js";
 import { requireProjectAccess, visibleProjectsWhere } from "../lib/access.js";
 import { audit } from "../lib/audit.js";
 import { badRequest, conflict, forbidden, notFound } from "../lib/errors.js";
-import { notify, notifyMany } from "../lib/notify.js";
+import { notifyMany } from "../lib/notify.js";
 import { touchProject } from "../lib/projects.js";
 import { parse, uuidParam } from "../lib/validate.js";
 import { currentUser, requireAuth, requireRole } from "../middleware/auth.js";

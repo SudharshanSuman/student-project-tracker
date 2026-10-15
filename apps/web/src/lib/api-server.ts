@@ -6,11 +6,9 @@ import type { Role } from "@iic/shared";
 
 const API = process.env.API_INTERNAL_URL ?? "http://localhost:4000";
 
-export class ForbiddenError extends Error {}
-
 /**
  * Server-side fetch to the API, forwarding the caller's session cookie.
- * 401 → login, 404 → Next.js not-found, 403 → ForbiddenError (rendered by the page).
+ * 401 → login, 404 → Next.js not-found, 403 → /forbidden page.
  */
 export async function serverApi<T>(path: string): Promise<T> {
   const jar = await cookies();
@@ -20,7 +18,7 @@ export async function serverApi<T>(path: string): Promise<T> {
   });
   if (res.status === 401) redirect("/login");
   if (res.status === 404) notFound();
-  if (res.status === 403) throw new ForbiddenError("forbidden");
+  if (res.status === 403) redirect("/forbidden");
   if (!res.ok) throw new Error(`API ${path} failed with ${res.status}`);
   return (await res.json()) as T;
 }
