@@ -1,4 +1,6 @@
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { defineConfig } from "vitest/config";
 
 function testDbUrl(): string {
@@ -26,6 +28,7 @@ export default defineConfig({
       INSTITUTION_EMAIL_DOMAINS: "uni.test",
       WEB_ORIGIN: "http://localhost:3000",
       APP_URL: "http://localhost:3000",
+      STORAGE_DIR: mkdtempSync(join(tmpdir(), "iic-test-storage-")),
     },
   },
 });

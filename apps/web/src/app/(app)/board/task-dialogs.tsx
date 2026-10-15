@@ -181,6 +181,15 @@ export function TaskDialog({ taskId, onClose, members, milestones, projectTasks,
               {task.dependents.length ? <p className="mt-2 text-xs text-muted-foreground">Blocks: {task.dependents.map((d) => d.task.title).join(", ")}</p> : null}
             </section>
 
+            {task.attachments.length ? (
+              <section>
+                <h3 className="mb-1 text-xs font-semibold text-muted-foreground">Attachments</h3>
+                <ul className="space-y-1 text-sm">
+                  {task.attachments.map((a) => <li key={a.id}><a className="text-primary hover:underline" href={`/api/documents/${a.id}/download`}>{a.originalName}</a> <span className="text-xs text-muted-foreground">· {Math.max(1, Math.round(a.sizeBytes / 1024))} KB</span></li>)}
+                </ul>
+              </section>
+            ) : null}
+
             <section>
               <h3 className="mb-1 text-xs font-semibold text-muted-foreground">Comments</h3>
               <ul className="max-h-48 space-y-2 overflow-y-auto">

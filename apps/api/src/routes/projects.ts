@@ -131,7 +131,7 @@ projectsRouter.get("/:id", async (req, res) => {
       stageHistory: { orderBy: { createdAt: "desc" }, include: { changedBy: { select: { name: true } } } },
       registrations: { include: { competition: { select: { id: true, name: true, organizer: true, submissionDeadline: true } } }, orderBy: { createdAt: "desc" } },
       github: { select: { owner: true, repo: true, status: true, lastSyncedAt: true, latestCommitAt: true } },
-      documents: { select: { id: true, originalName: true, mimeType: true, sizeBytes: true, createdAt: true }, orderBy: { createdAt: "desc" } },
+      documents: { select: { id: true, originalName: true, mimeType: true, sizeBytes: true, createdAt: true, uploadedBy: { select: { id: true, name: true } } }, orderBy: { createdAt: "desc" } },
     },
   });
   // Funding detail is visible to staff and the project lead only.

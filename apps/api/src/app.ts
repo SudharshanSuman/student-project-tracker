@@ -14,6 +14,7 @@ import { attendanceRouter } from "./routes/attendance.js";
 import { authRouter } from "./routes/auth.js";
 import { cohortsRouter } from "./routes/cohorts.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { documentsRouter } from "./routes/documents.js";
 import { insightsRouter } from "./routes/insights.js";
 import { milestonesRouter } from "./routes/milestones.js";
 import { projectsRouter } from "./routes/projects.js";
@@ -64,6 +65,7 @@ export function createApp() {
   api.use(tasksRouter);
   api.use(milestonesRouter);
   api.use(attendanceRouter);
+  api.use(documentsRouter);
   api.use(insightsRouter);
   app.use("/api", api);
 
