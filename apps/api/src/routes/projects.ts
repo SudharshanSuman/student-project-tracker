@@ -129,7 +129,8 @@ projectsRouter.get("/:id", async (req, res) => {
       },
       milestones: { orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }], select: { id: true, title: true, stage: true, status: true, isStageGate: true, dueDate: true } },
       stageHistory: { orderBy: { createdAt: "desc" }, include: { changedBy: { select: { name: true } } } },
-      registrations: { include: { competition: { select: { id: true, name: true, organizer: true, submissionDeadline: true } } }, orderBy: { createdAt: "desc" } },
+      // Explicit select: mentor notes are not for plain members (see routes/competitions.ts).
+      registrations: { select: { id: true, status: true, outcome: true, outcomeVerifiedAt: true, competition: { select: { id: true, name: true, organizer: true, submissionDeadline: true } } }, orderBy: { createdAt: "desc" } },
       github: { select: { owner: true, repo: true, status: true, lastSyncedAt: true, latestCommitAt: true } },
       documents: { select: { id: true, originalName: true, mimeType: true, sizeBytes: true, createdAt: true }, orderBy: { createdAt: "desc" } },
     },

@@ -21,6 +21,19 @@ const envSchema = z.object({
   DISCORD_GUILD_ID: z.string().optional().default(""),
   GITHUB_TOKEN: z.string().optional().default(""),
   REDIS_URL: z.string().optional().default(""),
+  // ── PDF reports ──
+  /** Chrome/Chromium binary for Puppeteer. Empty = auto-detect common install paths. */
+  PUPPETEER_EXECUTABLE_PATH: z.string().optional().default(""),
+  /** Only for containers that cannot use the Chrome sandbox (e.g. running as root). */
+  PUPPETEER_NO_SANDBOX: z.enum(["true", "false"]).default("false"),
+  /** Browser pool size = max reports rendered at once. */
+  REPORT_CONCURRENCY: z.coerce.number().int().min(1).max(8).default(2),
+  REPORT_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(3),
+  REPORT_RETENTION_DAYS: z.coerce.number().int().min(1).max(3650).default(30),
+  /** Run the background report worker in this process (disable on extra API replicas if you run a dedicated one). */
+  REPORT_WORKER: z.enum(["true", "false"]).default("true"),
+  /** Attendance rate below this (percent) is flagged in compliance reports. */
+  ATTENDANCE_COMPLIANCE_THRESHOLD: z.coerce.number().min(1).max(100).default(75),
 });
 
 const parsed = envSchema.safeParse(process.env);

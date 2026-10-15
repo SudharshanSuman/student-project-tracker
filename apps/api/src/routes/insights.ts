@@ -5,14 +5,12 @@ import { paginationSchema } from "@iic/shared";
 import { config } from "../config.js";
 import { prisma } from "../db.js";
 import { visibleProjectsWhere } from "../lib/access.js";
-import { notFound } from "../lib/errors.js";
 import { pageArgs, parse, uuidParam } from "../lib/validate.js";
 import { currentUser, requireAuth, requireRole } from "../middleware/auth.js";
 
 /**
- * Read-side routes for notifications, audit logs, integrations, Discord, GitHub,
- * competitions, funding and reports. Integration write paths (bot, sync workers)
- * and competition/funding/report mutations land in later phases (SPT-3 / SPT-4).
+ * Read-side routes for notifications, audit logs, integrations, Discord and GitHub.
+ * Competitions, funding and reports live in their own routers (SPT-4).
  */
 export const insightsRouter = Router();
 insightsRouter.use(requireAuth);
@@ -50,7 +48,7 @@ const NOTIFICATION_TYPES = [
   "task.assigned", "task.review", "task.done", "task.comment",
   "milestone.submitted", "milestone.approved", "milestone.rejected",
   "project.assigned", "project.member_added", "project.stage_changed",
-  "attendance.open", "competition.deadline", "integration.failure", "report.completed",
+  "attendance.open", "competition.deadline", "competition.outcome", "funding.review", "integration.failure", "report.completed",
 ] as const;
 
 insightsRouter.get("/notifications/preferences", async (req, res) => {
@@ -170,62 +168,4 @@ insightsRouter.get("/github", async (req, res) => {
     orderBy: { name: "asc" },
   });
   res.json({ configured: config.integrations.githubConfigured, projects });
-});
-
-// ── Competitions (directory; CRUD lands in SPT-4) ──
-insightsRouter.get("/competitions", async (req, res) => {
-  const user = currentUser(req);
-  const q = z.object({ q: z.string().trim().max(120).optional() }).parse(req.query);
-  const competitions = await prisma.competition.findMany({
-    where: q.q ? { OR: [{ name: { contains: q.q, mode: "insensitive" } }, { organizer: { contains: q.q, mode: "insensitive" } }] } : {},
-    include: {
-      registrations: {
-        where: { project: visibleProjectsWhere(user) },
-        select: { id: true, status: true, outcome: true, project: { select: { id: true, name: true } } },
-      },
-      _count: { select: { registrations: true } },
-    },
-    orderBy: [{ submissionDeadline: { sort: "asc", nulls: "last" } }],
-    take: 100,
-  });
-  res.json({ competitions });
-});
-
-// ── Funding ledger (staff + project leads; members excluded) ──
-insightsRouter.get("/funding", requireRole("ADMIN", "MENTOR", "PROJECT_LEAD"), async (req, res) => {
-  const user = currentUser(req);
-  const projectWhere: Prisma.ProjectWhereInput =
-    user.role === "PROJECT_LEAD" ? { memberships: { some: { userId: user.id, role: "LEAD" } } } : visibleProjectsWhere(user);
-  const [awards, totals] = await Promise.all([
-    prisma.fundingAward.findMany({
-      where: { project: projectWhere },
-      include: { project: { select: { id: true, name: true } }, verifiedBy: { select: { name: true } }, registration: { select: { competition: { select: { name: true } } } } },
-      orderBy: { createdAt: "desc" },
-      take: 200,
-    }),
-    prisma.fundingAward.groupBy({ by: ["currency", "verification"], where: { project: projectWhere }, _sum: { amount: true }, _count: { _all: true } }),
-  ]);
-  res.json({
-    awards: awards.map((a) => ({ ...a, amount: a.amount.toString() })),
-    totals: totals.map((t) => ({ currency: t.currency, verification: t.verification, amount: t._sum.amount?.toString() ?? "0", count: t._count._all })),
-  });
-});
-
-// ── Reports (generation engine lands in SPT-4) ──
-insightsRouter.get("/reports", requireRole("ADMIN", "MENTOR"), async (req, res) => {
-  const user = currentUser(req);
-  const reports = await prisma.generatedReport.findMany({
-    where: user.role === "ADMIN" ? {} : { requestedById: user.id },
-    include: { requestedBy: { select: { name: true } }, project: { select: { id: true, name: true } } },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
-  res.json({ reports });
-});
-
-insightsRouter.get("/reports/:id", requireRole("ADMIN", "MENTOR"), async (req, res) => {
-  const user = currentUser(req);
-  const report = await prisma.generatedReport.findUnique({ where: { id: uuidParam(req.params.id) } });
-  if (!report || (user.role !== "ADMIN" && report.requestedById !== user.id)) throw notFound("Report not found");
-  res.json({ report });
 });

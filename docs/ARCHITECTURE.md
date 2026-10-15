@@ -30,8 +30,12 @@ ADMIN → everything; MENTOR → projects where they are the assigned mentor; st
 - Tailwind 3 (not 4) for a stable, well-known config.
 - Express 5 handles async errors natively; a central error handler maps Zod/Prisma errors to safe JSON.
 
+## Competitions, funding, reports (SPT-4)
+See [REPORTS.md](REPORTS.md): verified-vs-claimed competition outcomes, decimal multi-currency funding with admin-reviewed change requests, and the Postgres-backed PDF job queue with a bounded Chromium pool.
+
 ## Known limitations (as of SPT-2)
-- Discord bot, GitHub sync, Redis/BullMQ workers (SPT-3), competition/funding CRUD and the Puppeteer PDF engine (SPT-4) are not built; their pages show real (possibly empty) data and setup guidance.
+- Discord bot, GitHub sync and Redis/BullMQ workers (SPT-3) are not built; their pages show real (possibly empty) data and setup guidance. The Discord engagement PDF report is a labelled placeholder until then.
+- Report jobs use a Postgres queue rather than BullMQ (no Redis dependency); attendance eligibility in reports uses current memberships (membership history is not versioned).
 - Document upload endpoints are not built yet (schema exists; `multer` installed).
 - No Playwright end-to-end tests yet; API integration tests cover the core journeys (SPT-5).
 - Docker files are unverified (no Docker on the dev machine).

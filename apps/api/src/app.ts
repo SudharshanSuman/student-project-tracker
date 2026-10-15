@@ -13,10 +13,13 @@ import { csrfGuard } from "./middleware/security.js";
 import { attendanceRouter } from "./routes/attendance.js";
 import { authRouter } from "./routes/auth.js";
 import { cohortsRouter } from "./routes/cohorts.js";
+import { competitionsRouter } from "./routes/competitions.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { fundingRouter } from "./routes/funding.js";
 import { insightsRouter } from "./routes/insights.js";
 import { milestonesRouter } from "./routes/milestones.js";
 import { projectsRouter } from "./routes/projects.js";
+import { reportsRouter } from "./routes/reports.js";
 import { tasksRouter } from "./routes/tasks.js";
 import { usersRouter } from "./routes/users.js";
 
@@ -61,10 +64,13 @@ export function createApp() {
   api.use("/cohorts", cohortsRouter);
   api.use("/projects", projectsRouter);
   api.use("/dashboard", dashboardRouter);
+  api.use("/reports", reportsRouter);
   api.use(tasksRouter);
   api.use(milestonesRouter);
   api.use(attendanceRouter);
   api.use(insightsRouter);
+  api.use(competitionsRouter);
+  api.use(fundingRouter);
   app.use("/api", api);
 
   app.use(notFoundHandler);

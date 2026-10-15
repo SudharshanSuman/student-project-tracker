@@ -23,7 +23,7 @@ interface Detail {
     memberships: { id: string; role: "LEAD" | "MEMBER"; joinedAt: string; user: { id: string; name: string; email: string; role: Role } }[];
     milestones: { id: string; title: string; stage: ProjectStage; status: string; isStageGate: boolean; dueDate: string | null }[];
     stageHistory: { id: string; fromStage: ProjectStage | null; toStage: ProjectStage; reason: string | null; createdAt: string; changedBy: { name: string } }[];
-    registrations: { id: string; status: string; outcome: string; competition: { id: string; name: string; organizer: string } }[];
+    registrations: { id: string; status: string; outcome: string; outcomeVerifiedAt: string | null; competition: { id: string; name: string; organizer: string } }[];
     github: { owner: string; repo: string; status: string; lastSyncedAt: string | null; latestCommitAt: string | null } | null;
     documents: { id: string; originalName: string; sizeBytes: number; createdAt: string }[];
     funding: { id: string; title: string; source: string; amount: string; currency: string; verification: string }[] | null;
@@ -152,8 +152,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <CardContent className="space-y-2 text-sm">
               {p.registrations.length === 0 ? <p className="text-xs text-muted-foreground">No competition registrations.</p> : p.registrations.map((r) => (
                 <div key={r.id} className="flex items-center justify-between gap-2">
-                  <span className="truncate">{r.competition.name}</span>
-                  <StatusBadge status={r.outcome === "PENDING" ? r.status : r.outcome} />
+                  <Link href={`/competitions/${r.competition.id}`} className="truncate hover:text-primary">{r.competition.name}</Link>
+                  <span className="flex items-center gap-1">
+                    <StatusBadge status={r.outcome === "PENDING" ? r.status : r.outcome} />
+                    {r.outcome !== "PENDING" && !r.outcomeVerifiedAt ? <span className="text-[10px] text-muted-foreground">unverified</span> : null}
+                  </span>
                 </div>
               ))}
             </CardContent>

@@ -13,11 +13,16 @@ RUN npm run build -w @iic/api
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
+# Chromium + fonts for the PDF report engine (puppeteer-core does not bundle a browser).
+RUN apk add --no-cache chromium nss freetype harfbuzz ttf-freefont font-noto
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/package.json ./apps/api/
 WORKDIR /app/apps/api
+# Generated reports/uploads (mount a volume here in production).
+RUN mkdir -p storage && chown node:node storage
 USER node
 EXPOSE 4000
 # Apply pending migrations, then start.

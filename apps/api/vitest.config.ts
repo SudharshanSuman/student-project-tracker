@@ -1,4 +1,6 @@
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 function testDbUrl(): string {
@@ -26,6 +28,9 @@ export default defineConfig({
       INSTITUTION_EMAIL_DOMAINS: "uni.test",
       WEB_ORIGIN: "http://localhost:3000",
       APP_URL: "http://localhost:3000",
+      // Generated PDFs go to a throwaway directory, never the dev storage.
+      STORAGE_DIR: mkdtempSync(path.join(tmpdir(), "iic-test-storage-")),
+      REPORT_CONCURRENCY: "1",
     },
   },
 });
