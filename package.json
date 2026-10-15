@@ -1,0 +1,30 @@
+{
+  "name": "iic-platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "University Innovation Incubation Cell (IIC) Management Platform",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "db:start": "node scripts/dev-db.mjs",
+    "db:migrate": "npm run migrate -w @iic/api",
+    "db:deploy": "npm run migrate:deploy -w @iic/api",
+    "db:seed": "npm run seed -w @iic/api",
+    "db:reset": "npm run db:reset -w @iic/api",
+    "dev:api": "npm run dev -w @iic/api",
+    "dev:web": "npm run dev -w @iic/web",
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run build -w @iic/shared && npm run build -w @iic/api && npm run build -w @iic/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "embedded-postgres": "17.10.0-beta.17"
+  }
+}

@@ -1,0 +1,957 @@
+// IIC Management Platform — relational schema.
+// Conventions: UUID primary keys, explicit foreign keys with deliberate onDelete
+// behaviour, createdAt/updatedAt on mutable records, money as Decimal + ISO 4217
+// currency, unique constraints for duplicate prevention. See docs/DATABASE.md.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum Role {
+  ADMIN
+  MENTOR
+  PROJECT_LEAD
+  PROJECT_MEMBER
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  DISABLED
+}
+
+enum MembershipRole {
+  LEAD
+  MEMBER
+}
+
+enum ProjectStage {
+  IDEATION
+  POC
+  MVP
+  MARKET_TESTING
+  PRE_INCUBATION
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ON_HOLD
+  ARCHIVED
+  GRADUATED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MilestoneStatus {
+  OPEN
+  SUBMITTED
+  APPROVED
+  CHANGES_REQUESTED
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUPERSEDED
+}
+
+enum ReviewDecision {
+  APPROVED
+  REJECTED
+}
+
+enum EventType {
+  WORKSHOP
+  MENTORING
+  MEETUP
+  DEMO_DAY
+  HACKATHON
+  OTHER
+}
+
+enum AttendanceEligibility {
+  ALL_ACTIVE_USERS
+  COHORT
+  PROJECT
+}
+
+enum QrPolicy {
+  ROTATING
+  SINGLE_USE
+}
+
+enum AttendanceSessionStatus {
+  SCHEDULED
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum AttendanceMethod {
+  QR
+  MANUAL
+}
+
+enum AttendanceRecordStatus {
+  PRESENT
+  CORRECTED
+  REVOKED
+}
+
+enum IntegrationStatus {
+  NOT_CONFIGURED
+  ACTIVE
+  ERROR
+  DISABLED
+}
+
+enum IntegrationKind {
+  DISCORD
+  GITHUB
+  EMAIL
+  REPORTS
+}
+
+enum VoiceSessionStatus {
+  OPEN
+  VERIFIED
+  INCOMPLETE
+  ESTIMATED
+}
+
+enum DiscordChannelType {
+  VOICE
+  TEXT
+}
+
+enum CompetitionRegistrationStatus {
+  INTERESTED
+  REGISTERED
+  SUBMITTED
+  WITHDRAWN
+}
+
+enum CompetitionOutcome {
+  PENDING
+  PARTICIPANT
+  FINALIST
+  WINNER
+}
+
+enum FundingSource {
+  COMPETITION
+  GRANT
+  SPONSOR
+  INSTITUTIONAL
+  OTHER
+}
+
+enum FundingVerification {
+  ESTIMATED
+  VERIFIED
+  REJECTED
+}
+
+enum ReportType {
+  PROJECT
+  COHORT
+  TERM
+  ATTENDANCE_COMPLIANCE
+  MILESTONE_PROGRESSION
+  COMPETITION_OUTCOMES
+  FUNDING
+  DISCORD_ENGAGEMENT
+  EXECUTIVE_SUMMARY
+}
+
+enum ReportStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum AlertStatus {
+  OPEN
+  DISMISSED
+  RESOLVED
+}
+
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+// ─────────────────────────── Identity ────────────────────────────
+
+model User {
+  id               String     @id @default(uuid()) @db.Uuid
+  email            String     @unique
+  name             String
+  passwordHash     String?
+  role             Role       @default(PROJECT_MEMBER)
+  status           UserStatus @default(ACTIVE)
+  avatarUrl        String?
+  bio              String?
+  phone            String?
+  department       String?
+  discordUserId    String?    @unique
+  discordUsername  String?
+  githubUsername   String?
+  onboardedAt      DateTime?
+  lastLoginAt      DateTime?
+  failedLoginCount Int        @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  sessions              Session[]
+  passwordResetTokens   PasswordResetToken[]
+  invitationsSent       Invitation[]             @relation("InvitedBy")
+  memberships           ProjectMembership[]
+  mentoredProjects      Project[]                @relation("ProjectMentor")
+  createdProjects       Project[]                @relation("ProjectCreatedBy")
+  assignedTasks         Task[]                   @relation("TaskAssignee")
+  createdTasks          Task[]                   @relation("TaskCreatedBy")
+  taskComments          TaskComment[]
+  taskStatusChanges     TaskStatusHistory[]
+  milestoneSubmissions  MilestoneSubmission[]
+  milestoneReviews      MilestoneReview[]
+  stageChanges          ProjectStageHistory[]
+  eventsCreated         Event[]
+  attendanceSessions    AttendanceSession[]
+  attendanceRecords     AttendanceRecord[]       @relation("AttendanceUser")
+  attendanceCorrections AttendanceRecord[]       @relation("AttendanceCorrectedBy")
+  voiceSessions         DiscordVoiceSession[]
+  competitionsCreated   Competition[]
+  fundingCreated        FundingAward[]           @relation("FundingCreatedBy")
+  fundingVerified       FundingAward[]           @relation("FundingVerifiedBy")
+  documents             Document[]
+  notifications         Notification[]
+  notificationPrefs     NotificationPreference[]
+  auditLogs             AuditLog[]
+  reports               GeneratedReport[]
+  alertsReviewed        InactivityAlert[]
+  stageGateEdits        StageGateRequirement[]
+
+  @@index([role, status])
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  lastSeenAt DateTime  @default(now())
+  revokedAt  DateTime?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Invitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  email       String
+  role        Role
+  tokenHash   String    @unique
+  invitedById String    @db.Uuid
+  cohortId    String?   @db.Uuid
+  projectId   String?   @db.Uuid
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  invitedBy User     @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Restrict)
+  cohort    Cohort?  @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+}
+
+// ─────────────────────── Projects & teams ────────────────────────
+
+model Cohort {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  term      String
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  projects           Project[]
+  invitations        Invitation[]
+  events             Event[]
+  attendanceSessions AttendanceSession[]
+}
+
+model Project {
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  slug           String        @unique
+  description    String
+  logoUrl        String?
+  category       String
+  stage          ProjectStage  @default(IDEATION)
+  status         ProjectStatus @default(ACTIVE)
+  repoUrl        String?
+  cohortId       String?       @db.Uuid
+  mentorId       String?       @db.Uuid
+  createdById    String        @db.Uuid
+  lastActivityAt DateTime      @default(now())
+  archivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  cohort             Cohort?                   @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  mentor             User?                     @relation("ProjectMentor", fields: [mentorId], references: [id], onDelete: SetNull)
+  createdBy          User                      @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  memberships        ProjectMembership[]
+  tasks              Task[]
+  milestones         Milestone[]
+  stageHistory       ProjectStageHistory[]
+  invitations        Invitation[]
+  attendanceSessions AttendanceSession[]
+  discordChannels    DiscordChannel[]
+  voiceSessions      DiscordVoiceSession[]
+  discordDaily       DiscordActivityDaily[]
+  github             GitHubIntegration?
+  registrations      CompetitionRegistration[]
+  funding            FundingAward[]
+  documents          Document[]
+  auditLogs          AuditLog[]
+  alerts             InactivityAlert[]
+  reports            GeneratedReport[]
+
+  @@index([stage])
+  @@index([status])
+  @@index([cohortId])
+  @@index([mentorId])
+  @@index([lastActivityAt])
+}
+
+model ProjectMembership {
+  id        String         @id @default(uuid()) @db.Uuid
+  projectId String         @db.Uuid
+  userId    String         @db.Uuid
+  role      MembershipRole @default(MEMBER)
+  joinedAt  DateTime       @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model ProjectStageHistory {
+  id          String        @id @default(uuid()) @db.Uuid
+  projectId   String        @db.Uuid
+  fromStage   ProjectStage?
+  toStage     ProjectStage
+  changedById String        @db.Uuid
+  reason      String?
+  createdAt   DateTime      @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  changedBy User    @relation(fields: [changedById], references: [id], onDelete: Restrict)
+
+  @@index([projectId, createdAt])
+}
+
+// ───────────────────── Tasks & milestones ────────────────────────
+
+model Task {
+  id          String       @id @default(uuid()) @db.Uuid
+  projectId   String       @db.Uuid
+  milestoneId String?      @db.Uuid
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  position    Float        @default(0)
+  assigneeId  String?      @db.Uuid
+  createdById String       @db.Uuid
+  startDate   DateTime?
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  project       Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone     Milestone?          @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  assignee      User?               @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy     User                @relation("TaskCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  dependencies  TaskDependency[]    @relation("TaskDependsOn")
+  dependents    TaskDependency[]    @relation("TaskBlocks")
+  comments      TaskComment[]
+  statusHistory TaskStatusHistory[]
+  attachments   Document[]
+
+  @@index([projectId, status])
+  @@index([assigneeId])
+  @@index([dueDate])
+}
+
+model TaskDependency {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @db.Uuid
+  dependsOnId String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  task      Task @relation("TaskDependsOn", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOn Task @relation("TaskBlocks", fields: [dependsOnId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnId])
+  @@index([dependsOnId])
+}
+
+model TaskComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  taskId    String   @db.Uuid
+  authorId  String   @db.Uuid
+  body      String
+  createdAt DateTime @default(now())
+
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([taskId, createdAt])
+}
+
+model TaskStatusHistory {
+  id          String      @id @default(uuid()) @db.Uuid
+  taskId      String      @db.Uuid
+  fromStatus  TaskStatus?
+  toStatus    TaskStatus
+  changedById String      @db.Uuid
+  changedAt   DateTime    @default(now())
+
+  task      Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  changedBy User @relation(fields: [changedById], references: [id], onDelete: Restrict)
+
+  @@index([taskId, changedAt])
+}
+
+/// Admin-configurable stage-gate checklist items, per project stage.
+model StageGateRequirement {
+  id          String       @id @default(uuid()) @db.Uuid
+  stage       ProjectStage
+  title       String
+  description String?
+  sortOrder   Int          @default(0)
+  isActive    Boolean      @default(true)
+  updatedById String?      @db.Uuid
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([stage, isActive])
+}
+
+model Milestone {
+  id          String          @id @default(uuid()) @db.Uuid
+  projectId   String          @db.Uuid
+  title       String
+  description String?
+  stage       ProjectStage
+  isStageGate Boolean         @default(false)
+  status      MilestoneStatus @default(OPEN)
+  dueDate     DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  project     Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+  submissions MilestoneSubmission[]
+
+  @@index([projectId, status])
+  @@index([status])
+}
+
+model MilestoneSubmission {
+  id            String           @id @default(uuid()) @db.Uuid
+  milestoneId   String           @db.Uuid
+  submittedById String           @db.Uuid
+  notes         String
+  evidenceUrl   String?
+  status        SubmissionStatus @default(PENDING)
+  submittedAt   DateTime         @default(now())
+
+  milestone   Milestone        @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  submittedBy User             @relation(fields: [submittedById], references: [id], onDelete: Restrict)
+  review      MilestoneReview?
+  documents   Document[]
+
+  @@index([milestoneId, submittedAt])
+  @@index([status])
+}
+
+model MilestoneReview {
+  id           String         @id @default(uuid()) @db.Uuid
+  submissionId String         @unique @db.Uuid
+  reviewerId   String         @db.Uuid
+  decision     ReviewDecision
+  comment      String
+  reviewedAt   DateTime       @default(now())
+
+  submission MilestoneSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User                @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+}
+
+// ──────────────────── Events & attendance ────────────────────────
+
+model Event {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  type        EventType @default(WORKSHOP)
+  location    String?
+  startsAt    DateTime
+  endsAt      DateTime
+  cohortId    String?   @db.Uuid
+  createdById String    @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cohort    Cohort?             @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  createdBy User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  sessions  AttendanceSession[]
+
+  @@index([startsAt])
+}
+
+model AttendanceSession {
+  id            String                  @id @default(uuid()) @db.Uuid
+  eventId       String?                 @db.Uuid
+  name          String
+  description   String?
+  location      String?
+  startsAt      DateTime
+  endsAt        DateTime
+  eligibility   AttendanceEligibility   @default(ALL_ACTIVE_USERS)
+  cohortId      String?                 @db.Uuid
+  projectId     String?                 @db.Uuid
+  qrPolicy      QrPolicy                @default(ROTATING)
+  qrTtlSeconds  Int                     @default(60)
+  /// Optional, explicitly permissioned location check. Never treated as identity proof.
+  locationCheck Boolean                 @default(false)
+  latitude      Float?
+  longitude     Float?
+  radiusMeters  Int?
+  status        AttendanceSessionStatus @default(SCHEDULED)
+  createdById   String                  @db.Uuid
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  event          Event?              @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  cohort         Cohort?             @relation(fields: [cohortId], references: [id], onDelete: SetNull)
+  project        Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdBy      User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  records        AttendanceRecord[]
+  redeemedTokens QrTokenRedemption[]
+
+  @@index([startsAt])
+  @@index([status])
+}
+
+model AttendanceRecord {
+  id               String                 @id @default(uuid()) @db.Uuid
+  sessionId        String                 @db.Uuid
+  userId           String                 @db.Uuid
+  method           AttendanceMethod
+  status           AttendanceRecordStatus @default(PRESENT)
+  checkedInAt      DateTime               @default(now())
+  tokenJti         String?
+  locationVerified Boolean?
+  correctedById    String?                @db.Uuid
+  correctionReason String?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  session     AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user        User              @relation("AttendanceUser", fields: [userId], references: [id], onDelete: Cascade)
+  correctedBy User?             @relation("AttendanceCorrectedBy", fields: [correctedById], references: [id], onDelete: SetNull)
+
+  /// One attendance record per user per session (duplicate check-in prevention).
+  @@unique([sessionId, userId])
+  @@index([userId])
+}
+
+/// Consumed single-use QR token ids (QrPolicy.SINGLE_USE).
+model QrTokenRedemption {
+  jti        String   @id
+  sessionId  String   @db.Uuid
+  redeemedAt DateTime @default(now())
+
+  session AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────── Discord telemetry ───────────────────────
+// Privacy: no message content is stored. Bot token lives in env/secret store only.
+
+model DiscordIntegration {
+  id                String            @id @default(uuid()) @db.Uuid
+  guildId           String            @unique
+  guildName         String?
+  status            IntegrationStatus @default(NOT_CONFIGURED)
+  minSessionSeconds Int               @default(300)
+  countMessages     Boolean           @default(true)
+  retentionDays     Int               @default(365)
+  lastHeartbeatAt   DateTime?
+  lastError         String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  channels      DiscordChannel[]
+  voiceSessions DiscordVoiceSession[]
+}
+
+model DiscordChannel {
+  id            String             @id @default(uuid()) @db.Uuid
+  integrationId String             @db.Uuid
+  channelId     String             @unique
+  name          String
+  type          DiscordChannelType
+  monitored     Boolean            @default(true)
+  projectId     String?            @db.Uuid
+  createdAt     DateTime           @default(now())
+
+  integration DiscordIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  project     Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+}
+
+model DiscordVoiceSession {
+  id              String             @id @default(uuid()) @db.Uuid
+  integrationId   String             @db.Uuid
+  discordUserId   String
+  userId          String?            @db.Uuid
+  projectId       String?            @db.Uuid
+  channelId       String
+  joinedAt        DateTime
+  leftAt          DateTime?
+  durationSeconds Int?
+  status          VoiceSessionStatus @default(OPEN)
+  closeReason     String?
+  /// Idempotency key derived from (guild, user, channel, joinedAt) to prevent duplicates.
+  externalKey     String             @unique
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  integration DiscordIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  user        User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  project     Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, joinedAt])
+  @@index([discordUserId, status])
+}
+
+model DiscordActivityDaily {
+  id            String   @id @default(uuid()) @db.Uuid
+  date          DateTime @db.Date
+  channelId     String
+  discordUserId String
+  projectId     String?  @db.Uuid
+  voiceSeconds  Int      @default(0)
+  messageCount  Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@unique([date, channelId, discordUserId])
+  @@index([projectId, date])
+}
+
+// ──────────────────────────── GitHub ─────────────────────────────
+
+model GitHubIntegration {
+  id             String            @id @default(uuid()) @db.Uuid
+  projectId      String            @unique @db.Uuid
+  owner          String
+  repo           String
+  defaultBranch  String?
+  status         IntegrationStatus @default(NOT_CONFIGURED)
+  latestCommitAt DateTime?
+  lastSyncedAt   DateTime?
+  lastError      String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  project  Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activity RepositoryActivityDaily[]
+}
+
+model RepositoryActivityDaily {
+  id                  String   @id @default(uuid()) @db.Uuid
+  githubIntegrationId String   @db.Uuid
+  date                DateTime @db.Date
+  commitCount         Int      @default(0)
+  prOpened            Int      @default(0)
+  prMerged            Int      @default(0)
+
+  integration GitHubIntegration @relation(fields: [githubIntegrationId], references: [id], onDelete: Cascade)
+
+  @@unique([githubIntegrationId, date])
+}
+
+/// Processed external events (webhooks, gateway events) for idempotency.
+model ProcessedExternalEvent {
+  id         String          @id @default(uuid()) @db.Uuid
+  source     IntegrationKind
+  externalId String
+  receivedAt DateTime        @default(now())
+
+  @@unique([source, externalId])
+}
+
+model IntegrationLog {
+  id          String          @id @default(uuid()) @db.Uuid
+  integration IntegrationKind
+  level       LogLevel
+  message     String
+  context     Json?
+  createdAt   DateTime        @default(now())
+
+  @@index([integration, createdAt])
+}
+
+model InactivityAlert {
+  id           String      @id @default(uuid()) @db.Uuid
+  projectId    String      @db.Uuid
+  reason       String
+  status       AlertStatus @default(OPEN)
+  reviewedById String?     @db.Uuid
+  reviewedAt   DateTime?
+  reviewNote   String?
+  createdAt    DateTime    @default(now())
+
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviewedBy User?   @relation(fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+}
+
+// ──────────────────── Competitions & funding ─────────────────────
+
+model Competition {
+  id                 String    @id @default(uuid()) @db.Uuid
+  name               String
+  organizer          String
+  description        String?
+  registrationUrl    String?
+  eligibility        String?
+  startDate          DateTime?
+  endDate            DateTime?
+  submissionDeadline DateTime?
+  createdById        String    @db.Uuid
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  createdBy     User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  registrations CompetitionRegistration[]
+
+  @@index([submissionDeadline])
+}
+
+model CompetitionRegistration {
+  id                String                        @id @default(uuid()) @db.Uuid
+  competitionId     String                        @db.Uuid
+  projectId         String                        @db.Uuid
+  status            CompetitionRegistrationStatus @default(REGISTERED)
+  outcome           CompetitionOutcome            @default(PENDING)
+  submissionRepoUrl String?
+  demoUrl           String?
+  pitchDeckUrl      String?
+  mentorNotes       String?
+  createdAt         DateTime                      @default(now())
+  updatedAt         DateTime                      @updatedAt
+
+  competition Competition    @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  funding     FundingAward[]
+  documents   Document[]
+
+  @@unique([competitionId, projectId])
+  @@index([outcome])
+}
+
+model FundingAward {
+  id             String              @id @default(uuid()) @db.Uuid
+  projectId      String              @db.Uuid
+  registrationId String?             @db.Uuid
+  source         FundingSource
+  title          String
+  amount         Decimal             @db.Decimal(14, 2)
+  /// ISO 4217 code, e.g. INR, USD.
+  currency       String              @db.Char(3)
+  verification   FundingVerification @default(ESTIMATED)
+  verifiedById   String?             @db.Uuid
+  verifiedAt     DateTime?
+  awardedAt      DateTime?
+  notes          String?
+  createdById    String              @db.Uuid
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  project      Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  registration CompetitionRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  verifiedBy   User?                    @relation("FundingVerifiedBy", fields: [verifiedById], references: [id], onDelete: SetNull)
+  createdBy    User                     @relation("FundingCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  documents    Document[]
+
+  @@index([projectId])
+  @@index([verification, currency])
+}
+
+// ─────────────────── Documents, notifications ────────────────────
+
+model Document {
+  id             String   @id @default(uuid()) @db.Uuid
+  uploadedById   String   @db.Uuid
+  projectId      String?  @db.Uuid
+  taskId         String?  @db.Uuid
+  submissionId   String?  @db.Uuid
+  registrationId String?  @db.Uuid
+  fundingAwardId String?  @db.Uuid
+  /// Generated storage id; never the user-supplied filename.
+  storageKey     String   @unique
+  originalName   String
+  mimeType       String
+  sizeBytes      Int
+  createdAt      DateTime @default(now())
+
+  uploadedBy   User                     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  project      Project?                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task         Task?                    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  submission   MilestoneSubmission?     @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  registration CompetitionRegistration? @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  fundingAward FundingAward?            @relation(fields: [fundingAwardId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  type      String
+  title     String
+  body      String?
+  link      String?
+  /// Prevents duplicate notifications for the same underlying event.
+  dedupeKey String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, readAt, createdAt])
+}
+
+model NotificationPreference {
+  id     String  @id @default(uuid()) @db.Uuid
+  userId String  @db.Uuid
+  type   String
+  inApp  Boolean @default(true)
+  email  Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
+
+// ─────────────────────── Audit & reporting ───────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  action     String
+  entityType String
+  entityId   String?
+  projectId  String?  @db.Uuid
+  metadata   Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  actor   User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@index([projectId, createdAt])
+  @@index([actorId])
+}
+
+model GeneratedReport {
+  id            String       @id @default(uuid()) @db.Uuid
+  type          ReportType
+  title         String
+  projectId     String?      @db.Uuid
+  periodStart   DateTime?
+  periodEnd     DateTime?
+  parameters    Json?
+  status        ReportStatus @default(QUEUED)
+  storageKey    String?      @unique
+  error         String?
+  attempts      Int          @default(0)
+  requestedById String       @db.Uuid
+  completedAt   DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  requestedBy User     @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([requestedById])
+}
+
+/// Platform configuration (e.g. engagement index weights, retention). Typed by key in code.
+model PlatformSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

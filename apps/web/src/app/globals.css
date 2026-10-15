@@ -1,0 +1,43 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SPEC §14 palette:
+   background #090D16 · card #111827 · border #1F2937 · primary #6366F1
+   success #10B981 · warning #F59E0B · text #F9FAFB · muted text #9CA3AF */
+@layer base {
+  :root {
+    --background: 222 42% 6%;
+    --card: 221 39% 11%;
+    --border: 215 28% 17%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 210 20% 98%;
+    --success: 160 84% 39%;
+    --warning: 38 92% 50%;
+    --destructive: 0 72% 51%;
+    --foreground: 210 20% 98%;
+    --muted: 217 33% 15%;
+    --muted-foreground: 218 11% 65%;
+    color-scheme: dark;
+  }
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply bg-background;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

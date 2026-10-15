@@ -1,0 +1,24 @@
+# hive orchestration metadata (separate repo / app-managed)
+hive/
+roster.json
+roster-backups/
+restore-gate.json
+worktrees/
+.claude/
+
+node_modules/
+.next/
+dist/
+coverage/
+*.log
+.env
+.env.local
+apps/**/.env
+!.env.example
+.dev-db/
+storage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+next-env.d.ts
+.dev-db.log
