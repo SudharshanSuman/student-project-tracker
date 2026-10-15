@@ -18,6 +18,9 @@ ADMIN → everything; MENTOR → projects where they are the assigned mentor; st
 - Stage gates: members submit evidence; the assigned mentor or an admin approves or requests changes with a mandatory comment (reviewer and time recorded). Stage advancement is a separate explicit action requiring an APPROVED gate for the current stage; admins may override, and the override is stored in stage history. **Task completion never changes milestone, stage or funding state.**
 - Attendance: QR codes carry HMAC-SHA256-signed tokens (`lib/qr.ts`) with a configurable lifetime (15–600 s). Rotating policy: one code per screen; single-use: each token id is redeemed once (`QrTokenRedemption`). `unique(sessionId, userId)` prevents duplicate check-ins. Optional location is a supporting signal only and never blocks or identifies.
 
+## Documents
+Uploads go to `POST /api/projects/:id/documents` (multipart field `file`, optional `taskId`/`submissionId` of the same project). Members and admins upload; anyone who can see the project can list/download; the uploader or lead deletes. Policy (`lib/storage.ts`): 10 MB cap, MIME allowlist (PDF, PNG, JPEG, WebP, DOCX/XLSX/PPTX, TXT/MD, CSV) with matching extension **and** content signature, stored as `STORAGE_DIR/documents/<uuid>` (mode 600) — never the user's filename. Downloads are always `Content-Disposition: attachment` with `nosniff` and a sandbox CSP. Uploads and deletions are audited.
+
 ## Real-time
 `/ws` WebSocket (cookie-authenticated, Origin-checked) pushes hints (`notification`, `board`); clients refetch over REST, so dropping the socket loses nothing. Clients also poll unread counts every 60 s.
 
@@ -36,7 +39,6 @@ See [REPORTS.md](REPORTS.md): verified-vs-claimed competition outcomes, decimal 
 ## Known limitations (as of SPT-2)
 - Discord bot, GitHub sync and Redis/BullMQ workers (SPT-3) are not built; their pages show real (possibly empty) data and setup guidance. The Discord engagement PDF report is a labelled placeholder until then.
 - Report jobs use a Postgres queue rather than BullMQ (no Redis dependency); attendance eligibility in reports uses current memberships (membership history is not versioned).
-- Document upload endpoints are not built yet (schema exists; `multer` installed).
 - No Playwright end-to-end tests yet; API integration tests cover the core journeys (SPT-5).
 - Docker files are unverified (no Docker on the dev machine).
-- Remaining `npm audit` findings are transitive build-time dependencies (Next's bundled postcss/sharp, Tailwind 3 tooling).
+- Remaining `npm audit` findings (15, none critical) all need major upgrades: Next 16, Prisma 7, Tailwind 4, eslint-config-next. Deferred: a framework migration while SPT-3/SPT-4 branches build on the current stack.

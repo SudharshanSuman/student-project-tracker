@@ -9,6 +9,7 @@ import { EmptyState, PageHeader } from "@/components/ui/states";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/table";
 import { getMe, serverApi } from "@/lib/api-server";
 import { formatDate, formatDateTime, formatMoney, humanize, relativeTime } from "@/lib/utils";
+import { DocumentsPanel } from "./documents-panel";
 import { MembersPanel, MilestoneCreate, ProjectAdminActions } from "./panels";
 
 export const metadata: Metadata = { title: "Project" };
@@ -25,7 +26,7 @@ interface Detail {
     stageHistory: { id: string; fromStage: ProjectStage | null; toStage: ProjectStage; reason: string | null; createdAt: string; changedBy: { name: string } }[];
     registrations: { id: string; status: string; outcome: string; outcomeVerifiedAt: string | null; competition: { id: string; name: string; organizer: string } }[];
     github: { owner: string; repo: string; status: string; lastSyncedAt: string | null; latestCommitAt: string | null } | null;
-    documents: { id: string; originalName: string; sizeBytes: number; createdAt: string }[];
+    documents: { id: string; originalName: string; mimeType: string; sizeBytes: number; createdAt: string; uploadedBy: { id: string; name: string } }[];
     funding: { id: string; title: string; source: string; amount: string; currency: string; verification: string }[] | null;
     health?: string; openTasks?: number; overdueTasks?: number; doneTasks?: number; totalTasks?: number;
   };
@@ -191,14 +192,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader><CardTitle>Documents</CardTitle></CardHeader>
-            <CardContent className="text-xs text-muted-foreground">
-              {p.documents.length === 0 ? "No documents uploaded." : (
-                <ul className="space-y-1">{p.documents.map((d) => <li key={d.id}>{d.originalName} · {Math.round(d.sizeBytes / 1024)} KB</li>)}</ul>
-              )}
-            </CardContent>
-          </Card>
+          <DocumentsPanel projectId={p.id} documents={p.documents} canUpload={(access.isMember || access.isAdmin) && p.status !== "ARCHIVED"} canManage={access.canManage} userId={me.id} />
         </div>
       </div>
     </>
