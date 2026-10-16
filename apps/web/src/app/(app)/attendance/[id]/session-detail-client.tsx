@@ -61,7 +61,7 @@ export function QrPanel({ id, open }: { id: string; open: boolean }) {
     <Card>
       <CardHeader><CardTitle>Check-in QR</CardTitle></CardHeader>
       <CardContent>
-        {!open ? <p className="text-sm text-muted-foreground">Open the session to display a QR code.</p> : error ? <p className="text-sm text-destructive">{error}</p> : svg ? (
+        {!open ? <p className="text-sm text-muted-foreground">Open the session to display a QR code.</p> : error ? <p className="text-sm bg-destructive px-1 text-foreground">{error}</p> : svg ? (
           <div className="space-y-2">
             <div className="mx-auto max-w-[280px] overflow-hidden rounded-md bg-white p-2" role="img" aria-label="Attendance QR code" dangerouslySetInnerHTML={{ __html: svg }} />
             <p className="text-center tabular-nums text-xs text-muted-foreground">Rotates in {remaining}s · signed, short-lived token</p>

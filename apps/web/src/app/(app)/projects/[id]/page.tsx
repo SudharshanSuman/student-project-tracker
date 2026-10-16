@@ -102,7 +102,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   <TBody>
                     {p.milestones.map((m) => (
                       <TR key={m.id}>
-                        <TD><Link href={`/milestones?open=${m.id}`} className="hover:text-link">{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
+                        <TD><Link href={`/milestones?open=${m.id}`} className="hover:text-link">{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
                         <TD className="text-xs text-muted-foreground">{STAGE_LABELS[m.stage]}</TD>
                         <TD><StatusBadge status={m.status} /></TD>
                         <TD className="tabular-nums text-xs">{formatDate(m.dueDate)}</TD>

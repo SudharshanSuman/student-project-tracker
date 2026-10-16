@@ -47,9 +47,9 @@ export function CheckIn({ token }: { token: string }) {
         <CardContent className="space-y-4">
           {!token ? <p className="text-sm text-muted-foreground">No QR token found. Scan the code displayed at the session.</p> : result ? (
             result.ok ? (
-              <div className="flex items-start gap-3 text-sm"><CheckCircle2 className="h-5 w-5 text-success" /><div><p className="font-medium">Checked in to {result.session}</p><p className="text-muted-foreground">{new Date(result.at).toLocaleString()}</p></div></div>
+              <div className="flex items-start gap-3 text-sm"><CheckCircle2 className="h-5 w-5 bg-success px-1 text-foreground" /><div><p className="font-medium">Checked in to {result.session}</p><p className="text-muted-foreground">{new Date(result.at).toLocaleString()}</p></div></div>
             ) : (
-              <div className="flex items-start gap-3 text-sm"><XCircle className="h-5 w-5 text-destructive" /><p>{result.message}</p></div>
+              <div className="flex items-start gap-3 text-sm"><XCircle className="h-5 w-5 bg-destructive px-1 text-foreground" /><p>{result.message}</p></div>
             )
           ) : (
             <>

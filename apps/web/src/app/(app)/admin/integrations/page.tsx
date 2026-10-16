@@ -148,7 +148,7 @@ export default async function IntegrationsPage() {
                 <p className="text-xs text-muted-foreground">
                   Last heartbeat: {formatDateTime(d.discord.integration.lastHeartbeatAt)}
                   {d.discord.integration.lastError && (
-                    <span className="block text-destructive">Error: {d.discord.integration.lastError}</span>
+                    <span className="block bg-destructive px-1 text-foreground">Error: {d.discord.integration.lastError}</span>
                   )}
                 </p>
                 <div className="flex justify-between text-xs text-muted-foreground border-t pt-2">
@@ -300,7 +300,7 @@ export default async function IntegrationsPage() {
             <p className="text-xs text-muted-foreground">
               A configurable default for spotting teams that may need support. It is an operational administrative guide, not an individual productivity or competence measure.
             </p>
-            <div className="flex items-center gap-2 text-xs text-success">
+            <div className="flex items-center gap-2 text-xs bg-success px-1 text-foreground">
               <Shield className="h-3.5 w-3.5" />
               Privacy preserving: message content and private messages are strictly excluded.
             </div>
@@ -310,9 +310,9 @@ export default async function IntegrationsPage() {
 
       {/* Inactivity Alerts */}
       {alerts.length > 0 && (
-        <Card className="mt-4 border-warning/50">
+        <Card className="mt-4 border-foreground">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-warning">
+            <CardTitle className="flex items-center gap-2 bg-warning px-1 text-foreground">
               <AlertTriangle className="h-4 w-4" /> Open Inactivity Alerts ({alerts.length})
             </CardTitle>
           </CardHeader>
@@ -409,9 +409,9 @@ export default async function IntegrationsPage() {
                   <span
                     className={`font-semibold shrink-0 ${
                       l.level === "ERROR"
-                        ? "text-destructive"
+                        ? "bg-destructive px-1 text-foreground"
                         : l.level === "WARN"
-                        ? "text-warning"
+                        ? "bg-warning px-1 text-foreground"
                         : "text-muted-foreground"
                     }`}
                   >

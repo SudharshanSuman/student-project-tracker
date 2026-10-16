@@ -59,7 +59,7 @@ export function Stat({ label, value, hint, icon, tone = "default" }: { label: st
     <div className="flex flex-col gap-2 rounded-lg border bg-card p-4">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{label}</span>
-        <span className={cn(tone === "success" && "text-success", tone === "warning" && "text-warning", tone === "default" && "text-link")}>{icon}</span>
+        <span className={cn(tone === "success" && "bg-success px-1 text-foreground", tone === "warning" && "bg-warning px-1 text-foreground", tone === "default" && "text-link")}>{icon}</span>
       </div>
       <div className="tabular-nums text-2xl font-semibold tabular-nums">{value}</div>
       {hint ? <div className="text-xs text-muted-foreground">{hint}</div> : null}
@@ -68,7 +68,7 @@ export function Stat({ label, value, hint, icon, tone = "default" }: { label: st
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-md bg-muted", className)} />;
+  return <div className={cn(" rounded-md bg-muted", className)} />;
 }
 
 export function Field({ label, htmlFor, error, hint, children }: { label: string; htmlFor: string; error?: string; hint?: string; children: React.ReactNode }) {
@@ -79,7 +79,7 @@ export function Field({ label, htmlFor, error, hint, children }: { label: string
       </label>
       {children}
       {error ? (
-        <p role="alert" className="text-xs text-destructive">
+        <p role="alert" className="text-xs bg-destructive px-1 text-foreground">
           {error}
         </p>
       ) : hint ? (

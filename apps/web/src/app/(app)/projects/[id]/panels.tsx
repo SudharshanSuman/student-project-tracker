@@ -112,7 +112,7 @@ function StageDialog({ project, isAdmin, gateApproved }: { project: ProjectLite;
             <Select id="st-to" {...register("toStage")}>{PROJECT_STAGES.filter((s) => s !== project.stage).map((s) => <option key={s} value={s}>{STAGE_LABELS[s]}</option>)}</Select>
           </Field>
           {forward && !gateApproved ? (
-            <p className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
+            <p className="rounded-md border border-foreground bg-warning px-3 py-2 text-xs bg-warning px-1 text-foreground">
               The {STAGE_LABELS[project.stage]} stage-gate milestone is not approved. {isAdmin ? "As an admin you can override; the reason is recorded." : "Approve the gate first."}
             </p>
           ) : null}
@@ -140,7 +140,7 @@ export function MembersPanel({ projectId, memberships, canManage, isAdmin }: {
         {memberships.length === 0 ? <p className="text-xs text-muted-foreground">No members yet.</p> : memberships.map((m) => (
           <div key={m.id} className="flex items-center justify-between gap-2 text-sm">
             <div className="min-w-0">
-              <p className="truncate">{m.user.name} {m.role === "LEAD" ? <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">LEAD</span> : null}</p>
+              <p className="truncate">{m.user.name} {m.role === "LEAD" ? <span className="ml-1 rounded bg-muted px-1.5 py-0.5 text-[10px] text-link">LEAD</span> : null}</p>
               <p className="truncate text-xs text-muted-foreground">{m.user.email}</p>
             </div>
             {canManage && (m.role !== "LEAD" || isAdmin) ? (

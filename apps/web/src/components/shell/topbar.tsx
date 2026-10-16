@@ -43,7 +43,7 @@ function NotificationBell() {
     <Link href="/notifications" className="relative rounded-md p-2 hover:bg-muted" aria-label={`Notifications, ${unread} unread`}>
       <Bell className="h-4 w-4" />
       {unread > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center bg-primary px-1 tabular-nums text-[10px]">{unread > 99 ? "99+" : unread}</span>
+        <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center border-2 border-foreground bg-destructive px-1 tabular-nums text-[10px] font-bold">{unread > 99 ? "99+" : unread}</span>
       ) : null}
     </Link>
   );
@@ -57,11 +57,11 @@ export function Topbar({ name, email, role }: { name: string; email: string; rol
     router.refresh();
   }
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-2 border-b bg-background/80 px-4 backdrop-blur">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-2 border-b bg-background px-4">
       <NotificationBell />
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted" aria-label="Account menu">
-          <span className="grid h-7 w-7 place-items-center bg-primary/20 text-xs font-semibold text-link">{initials(name)}</span>
+        <DropdownMenu.Trigger className="flex items-center gap-2 border border-foreground px-2 py-1 hover:bg-muted" aria-label="Account menu">
+          <span className="grid h-7 w-7 place-items-center border-2 border-foreground bg-primary text-xs font-bold text-primary-foreground">{initials(name)}</span>
           <span className="hidden text-left sm:block">
             <span className="block text-xs font-medium leading-tight">{name}</span>
             <span className="block text-[11px] leading-tight text-muted-foreground">{ROLE_LABELS[role]}</span>

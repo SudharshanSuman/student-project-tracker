@@ -224,7 +224,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
       <section className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Trophy className="h-4 w-4 text-warning" /> Hackathon leaderboard</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Trophy className="h-4 w-4 bg-warning px-1 text-foreground" /> Hackathon leaderboard</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1.5">
             {d.leaderboard.length === 0 ? <p className="text-xs text-muted-foreground">No finalist or winner outcomes recorded.</p> : d.leaderboard.map((r, i) => (
@@ -237,7 +237,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Landmark className="h-4 w-4 text-success" /> Funding overview</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Landmark className="h-4 w-4 bg-success px-1 text-foreground" /> Funding overview</CardTitle>
             <CardDescription>Verified and estimated tracked separately</CardDescription>
           </CardHeader>
           <CardContent className="space-y-1.5 text-sm">
@@ -285,7 +285,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
       <section className="mt-4">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Clock className="h-4 w-4 text-warning" /> Upcoming deadlines (14 days)</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Clock className="h-4 w-4 bg-warning px-1 text-foreground" /> Upcoming deadlines (14 days)</CardTitle>
           </CardHeader>
           <CardContent>
             {d.deadlines.tasks.length + d.deadlines.competitions.length === 0 ? (
@@ -300,7 +300,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
                 ))}
                 {d.deadlines.competitions.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                    <span className="flex items-center gap-1 truncate"><Trophy className="h-3 w-3 text-warning" />{c.name}</span>
+                    <span className="flex items-center gap-1 truncate"><Trophy className="h-3 w-3 bg-warning px-1 text-foreground" />{c.name}</span>
                     <span className="shrink-0 tabular-nums text-xs text-muted-foreground">{formatDate(c.submissionDeadline)}</span>
                   </li>
                 ))}

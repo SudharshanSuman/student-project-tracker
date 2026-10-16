@@ -48,7 +48,7 @@ export default async function CompetitionsPage({ searchParams }: { searchParams:
           <div className="grid content-start gap-3 md:grid-cols-2">
             {competitions.map((c) => (
               <Link key={c.id} href={`/competitions/${c.id}`} className="group">
-                <Card className="h-full space-y-2 p-4 transition-colors group-hover:border-foreground">
+                <Card className="h-full space-y-2 p-4 group-hover:border-foreground">
                   <div className="flex items-start justify-between gap-2">
                     <div><h2 className="font-semibold">{c.name}</h2><p className="text-xs text-muted-foreground">{c.organizer}</p></div>
                     <span className="whitespace-nowrap tabular-nums text-xs text-muted-foreground">{c.submissionDeadline ? `due ${formatDate(c.submissionDeadline)}` : formatDate(c.endDate)}</span>

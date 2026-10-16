@@ -2,13 +2,13 @@
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { STAGE_LABELS, TASK_STATUS_LABELS, type ProjectStage, type TaskStatus } from "@iic/shared";
 
-// Swiss palette (see globals.css): ink, rule, accent, olive/ochre/rust semantics.
-const AXIS = { stroke: "#6E6E6E", fontSize: 11 };
+// Brutalist palette (see globals.css): raw primaries, black outlines.
+const AXIS = { stroke: "#000000", fontSize: 11, fontWeight: 700 };
 const TOOLTIP = {
-  contentStyle: { background: "#FFFFFF", border: "1px solid #000000", borderRadius: 0, fontSize: 12 },
+  contentStyle: { background: "#FFFFFF", border: "3px solid #000000", borderRadius: 0, fontSize: 12 },
   labelStyle: { color: "#000000" },
   itemStyle: { color: "#000000" },
-  cursor: { fill: "rgba(179,139,109,0.12)" },
+  cursor: { fill: "#FFFF00" },
 };
 
 export function StageChart({ data }: { data: { stage: ProjectStage; count: number }[] }) {
@@ -16,17 +16,17 @@ export function StageChart({ data }: { data: { stage: ProjectStage; count: numbe
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid stroke="#DDD8CF" vertical={false} />
+        <CartesianGrid stroke="#000000" vertical={false} />
         <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={false} interval={0} />
         <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
         <Tooltip {...TOOLTIP} />
-        <Bar dataKey="count" name="Projects" fill="#000000" radius={0} />
+        <Bar dataKey="count" name="Projects" fill="#0000FF" stroke="#000000" strokeWidth={3} radius={0} />
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
-const STATUS_COLORS: Record<TaskStatus, string> = { TODO: "#C9C3B6", IN_PROGRESS: "#B38B6D", REVIEW: "#8C5F0F", DONE: "#5C6B30" };
+const STATUS_COLORS: Record<TaskStatus, string> = { TODO: "#FFFFFF", IN_PROGRESS: "#0000FF", REVIEW: "#FF00FF", DONE: "#00FF00" };
 
 export function TaskStatusChart({ data }: { data: { status: TaskStatus; count: number }[] }) {
   const rows = data.map((d) => ({ name: TASK_STATUS_LABELS[d.status], value: d.count, status: d.status }));
@@ -34,7 +34,7 @@ export function TaskStatusChart({ data }: { data: { status: TaskStatus; count: n
     <div className="flex items-center gap-4">
       <ResponsiveContainer width={140} height={140}>
         <PieChart>
-          <Pie data={rows} dataKey="value" nameKey="name" innerRadius={42} outerRadius={64} stroke="none">
+          <Pie data={rows} dataKey="value" nameKey="name" innerRadius={42} outerRadius={64} stroke="#000000" strokeWidth={3}>
             {rows.map((r) => (
               <Cell key={r.status} fill={STATUS_COLORS[r.status]} />
             ))}
@@ -45,7 +45,7 @@ export function TaskStatusChart({ data }: { data: { status: TaskStatus; count: n
       <ul className="space-y-1 text-xs">
         {rows.map((r) => (
           <li key={r.status} className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full" style={{ background: STATUS_COLORS[r.status] }} />
+            <span className="h-3 w-3 border-2 border-foreground" style={{ background: STATUS_COLORS[r.status] }} />
             <span className="text-muted-foreground">{r.name}</span>
             <span className="tabular-nums">{r.value}</span>
           </li>
@@ -60,11 +60,11 @@ export function CompletedChart({ data }: { data: { week: string; completed: numb
   return (
     <ResponsiveContainer width="100%" height={160}>
       <BarChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid stroke="#DDD8CF" vertical={false} />
+        <CartesianGrid stroke="#000000" vertical={false} />
         <XAxis dataKey="week" tick={AXIS} tickLine={false} axisLine={false} />
         <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
         <Tooltip {...TOOLTIP} />
-        <Bar dataKey="completed" name="Tasks completed" fill="#5C6B30" radius={0} />
+        <Bar dataKey="completed" name="Tasks completed" fill="#00FF00" stroke="#000000" strokeWidth={3} radius={0} />
       </BarChart>
     </ResponsiveContainer>
   );

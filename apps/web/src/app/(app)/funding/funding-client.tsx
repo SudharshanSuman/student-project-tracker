@@ -107,7 +107,7 @@ export function AwardActions({ a }: { a: Award }) {
   return (
     <div className="flex flex-wrap justify-end gap-1">
       {a.canVerify ? <VerifyDialog a={a} /> : null}
-      {a.verification === "VERIFIED" ? (a.changeRequests.length ? <span className="text-[11px] text-warning">change pending</span> : <ChangeRequestDialog a={a} />) : (
+      {a.verification === "VERIFIED" ? (a.changeRequests.length ? <span className="text-[11px] bg-warning px-1 text-foreground">change pending</span> : <ChangeRequestDialog a={a} />) : (
         <ConfirmButton title="Delete this entry?" description="Only unverified entries can be deleted. This is recorded in the audit log." confirmLabel="Delete" destructive variant="ghost"
           onConfirm={async () => { await run(() => api(`/funding/${a.id}`, { method: "DELETE" }), "Entry deleted"); }}><Trash2 /></ConfirmButton>
       )}

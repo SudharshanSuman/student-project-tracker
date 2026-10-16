@@ -55,7 +55,7 @@ function Card({ task, onOpen, draggable }: { task: BoardTask; onOpen: () => void
         <span className="flex items-center gap-2">
           {task.dependencies.length ? <span className="flex items-center gap-0.5"><Link2 className="h-3 w-3" />{task.dependencies.length}</span> : null}
           {task._count.comments ? <span className="flex items-center gap-0.5"><MessageSquare className="h-3 w-3" />{task._count.comments}</span> : null}
-          {task.dueDate ? <span className={cn("flex items-center gap-0.5 tabular-nums", overdue && "text-destructive")}><CalendarClock className="h-3 w-3" />{formatDate(task.dueDate)}</span> : null}
+          {task.dueDate ? <span className={cn("flex items-center gap-0.5 tabular-nums", overdue && "bg-destructive px-1 text-foreground")}><CalendarClock className="h-3 w-3" />{formatDate(task.dueDate)}</span> : null}
         </span>
       </div>
     </div>
@@ -69,9 +69,9 @@ function Column({ status, children, count, dropAllowed }: { status: TaskStatus; 
       ref={setNodeRef}
       aria-label={`${TASK_STATUS_LABELS[status]} column`}
       className={cn(
-        "flex min-h-[300px] flex-col gap-2 rounded-lg border bg-muted p-3 transition-colors",
-        isOver && dropAllowed && "border-primary/60 bg-primary/5",
-        isOver && dropAllowed === false && "border-destructive/60",
+        "flex min-h-[300px] flex-col gap-2 rounded-lg border bg-muted p-3",
+        isOver && dropAllowed && "border-foreground bg-muted",
+        isOver && dropAllowed === false && "border-foreground",
       )}
     >
       <h2 className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted-foreground">

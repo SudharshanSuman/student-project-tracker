@@ -22,7 +22,7 @@ function NavList({ role, onNavigate }: { role: Role; onNavigate?: () => void }) 
     <nav aria-label="Main" className="flex flex-col gap-5 px-3 py-4">
       {groups.map((g) => (
         <div key={g}>
-          <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">{g}</p>
+          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-foreground">{g}</p>
           <ul className="space-y-0.5">
             {items
               .filter((i) => i.group === g)
@@ -36,8 +36,8 @@ function NavList({ role, onNavigate }: { role: Role; onNavigate?: () => void }) 
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                        active && "bg-muted font-medium text-foreground",
+                        "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+                        active && "bg-muted font-bold text-foreground outline outline-[3px] -outline-offset-[3px] outline-foreground",
                       )}
                     >
                       <Icon className={cn("h-4 w-4", active && "text-primary")} />
@@ -56,7 +56,7 @@ function NavList({ role, onNavigate }: { role: Role; onNavigate?: () => void }) 
 function Brand() {
   return (
     <Link href="/dashboard" className="flex items-center gap-2 px-5 py-4">
-      <span className="grid h-7 w-7 place-items-center bg-foreground tabular-nums text-background text-xs font-bold">IIC</span>
+      <span className="grid h-7 w-7 place-items-center border-2 border-foreground bg-muted text-xs font-bold text-foreground">IIC</span>
       <span className="text-sm font-semibold">Innovation Cell</span>
     </Link>
   );

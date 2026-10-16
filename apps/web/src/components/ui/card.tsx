@@ -8,7 +8,7 @@ export const CardHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDiv
   <div className={cn("flex flex-col gap-1 p-4 pb-2", className)} {...props} />
 );
 export const CardTitle = ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("text-sm font-semibold leading-none tracking-tight", className)} {...props} />
+  <h3 className={cn("text-sm font-bold uppercase leading-none tracking-tight", className)} {...props} />
 );
 export const CardDescription = ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
   <p className={cn("text-xs text-muted-foreground", className)} {...props} />
