@@ -157,13 +157,34 @@ describe.skipIf(!hasChrome)("PDF generation end to end", () => {
     }
   });
 
-  it("Discord engagement is a clearly labelled pending-integration stub", async () => {
+  it("Discord engagement says plainly when no telemetry exists", async () => {
     const admin = await loginAs(w.admin.email);
     const { report } = (await admin.post("/api/reports").send({ type: "DISCORD_ENGAGEMENT", periodStart: "2026-01-01", periodEnd: today })).body;
     await processNextReport();
     const row = await prisma.generatedReport.findUniqueOrThrow({ where: { id: report.id } });
     expect(row.status).toBe("COMPLETED");
-    if (hasPdftotext) expect(execFileSync("pdftotext", [reportPath(row.storageKey!), "-"]).toString()).toContain("Pending integration");
+    if (hasPdftotext) expect(execFileSync("pdftotext", [reportPath(row.storageKey!), "-"]).toString()).toContain("no engagement telemetry has been collected");
+  });
+
+  it("Discord engagement aggregates verified voice time and message counts per project", async () => {
+    const integ = await prisma.discordIntegration.create({ data: { guildId: "g1", status: "ACTIVE", minSessionSeconds: 300 } });
+    const t = new Date();
+    await prisma.discordVoiceSession.createMany({ data: [
+      { integrationId: integ.id, discordUserId: "u1", projectId: w.project.id, channelId: "c1", joinedAt: t, durationSeconds: 5400, status: "VERIFIED", externalKey: "k1" },
+      { integrationId: integ.id, discordUserId: "u2", projectId: w.project.id, channelId: "c1", joinedAt: t, durationSeconds: 1800, status: "VERIFIED", externalKey: "k2" },
+      { integrationId: integ.id, discordUserId: "u3", projectId: w.project.id, channelId: "c1", joinedAt: t, durationSeconds: 60, status: "INCOMPLETE", externalKey: "k3" },
+    ] });
+    await prisma.discordActivityDaily.create({ data: { date: new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate())), channelId: "c1", discordUserId: "u1", projectId: w.project.id, voiceSeconds: 5400, messageCount: 42 } });
+    const admin = await loginAs(w.admin.email);
+    const { report } = (await admin.post("/api/reports").send({ type: "DISCORD_ENGAGEMENT", periodStart: "2026-01-01", periodEnd: today })).body;
+    await processNextReport();
+    const row = await prisma.generatedReport.findUniqueOrThrow({ where: { id: report.id } });
+    expect(row.status).toBe("COMPLETED");
+    if (hasPdftotext) {
+      const text = execFileSync("pdftotext", ["-layout", reportPath(row.storageKey!), "-"]).toString();
+      expect(text).toMatch(/Alpha\s+2\s+2\.0\s+42\s+2/); // 2 verified sessions, 2.0 h, 42 messages, 2 people
+      expect(text).not.toContain("u1"); // no individual Discord ids
+    }
   });
 
   it("every report type renders", async () => {

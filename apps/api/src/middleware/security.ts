@@ -12,6 +12,7 @@ const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
  */
 export const csrfGuard: RequestHandler = (req, _res, next) => {
   if (SAFE_METHODS.has(req.method)) return next();
+  if (req.path === "/integrations/github/webhook" || req.path.endsWith("/github/webhook")) return next();
   const origin = req.get("origin");
   if (origin && !config.webOrigins.includes(origin)) {
     return next(forbidden("Cross-origin request rejected"));
