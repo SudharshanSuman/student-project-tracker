@@ -85,7 +85,7 @@ export function MilestoneDialog({ id }: { id: string }) {
                       {s.evidenceUrl ? <a href={s.evidenceUrl} target="_blank" rel="noreferrer noopener" className="mt-1 inline-flex items-center gap-1 text-xs text-link">Evidence <ExternalLink className="h-3 w-3" /></a> : null}
                       {s.review ? (
                         <div className="mt-2 border-t pt-2 text-xs">
-                          <span className={s.review.decision === "APPROVED" ? "bg-success px-1 text-foreground" : "bg-destructive px-1 text-foreground"}>{s.review.decision === "APPROVED" ? "Approved" : "Rejected"}</span> by {s.review.reviewer.name} · {formatDateTime(s.review.reviewedAt)}
+                          <span className={s.review.decision === "APPROVED" ? "text-success" : "text-destructive"}>{s.review.decision === "APPROVED" ? "Approved" : "Rejected"}</span> by {s.review.reviewer.name} · {formatDateTime(s.review.reviewedAt)}
                           <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{s.review.comment}</p>
                         </div>
                       ) : null}

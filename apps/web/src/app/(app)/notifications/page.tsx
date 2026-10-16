@@ -32,7 +32,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         <Card>
           <CardContent className="divide-y p-0">
             {data.notifications.map((n) => (
-              <div key={n.id} className={cn("flex items-start justify-between gap-3 px-4 py-3", !n.readAt && "bg-muted")}>
+              <div key={n.id} className={cn("flex items-start justify-between gap-3 px-4 py-3", !n.readAt && "bg-primary/5")}>
                 <div className="min-w-0">
                   <p className="text-sm">{!n.readAt ? <span className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" aria-label="Unread" /> : null}{n.link ? <Link href={n.link} className="hover:text-link">{n.title}</Link> : n.title}</p>
                   {n.body ? <p className="truncate text-xs text-muted-foreground">{n.body}</p> : null}

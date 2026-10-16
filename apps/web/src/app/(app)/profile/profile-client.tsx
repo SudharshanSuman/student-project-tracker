@@ -67,7 +67,7 @@ export function SessionsList({ sessions }: { sessions: { id: string; createdAt: 
             <span className="block truncate">{s.userAgent ?? "Unknown device"}</span>
             <span className="block font-mono text-[11px] text-muted-foreground">{s.ip ?? "—"} · last seen {formatDateTime(s.lastSeenAt)}</span>
           </span>
-          {s.current ? <span className="text-xs bg-success px-1 text-foreground">This device</span> : <Button size="sm" variant="ghost" disabled={pending} onClick={() => run(() => api(`/users/profile/sessions/${s.id}`, { method: "DELETE" }), "Session signed out")}>Sign out</Button>}
+          {s.current ? <span className="text-xs text-success">This device</span> : <Button size="sm" variant="ghost" disabled={pending} onClick={() => run(() => api(`/users/profile/sessions/${s.id}`, { method: "DELETE" }), "Session signed out")}>Sign out</Button>}
         </li>
       ))}
     </ul>

@@ -48,7 +48,7 @@ export default async function MilestonesPage({ searchParams }: { searchParams: P
               <TBody>
                 {data.milestones.map((m) => (
                   <TR key={m.id}>
-                    <TD><Link className="font-medium hover:text-link" href={`/milestones?${status ? `status=${status}&` : ""}open=${m.id}`}>{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
+                    <TD><Link className="font-medium hover:text-link" href={`/milestones?${status ? `status=${status}&` : ""}open=${m.id}`}>{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
                     <TD><Link className="hover:text-link" href={`/projects/${m.project.id}`}>{m.project.name}</Link></TD>
                     <TD className="text-xs text-muted-foreground">{STAGE_LABELS[m.stage]}</TD>
                     <TD><StatusBadge status={m.status} /></TD>

@@ -60,7 +60,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {data.projects.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} className="group">
-              <Card className="flex h-full flex-col gap-3 p-4 group-hover:border-foreground">
+              <Card className="flex h-full flex-col gap-3 p-4 transition-colors group-hover:border-foreground">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h2 className="truncate font-semibold">{p.name}</h2>

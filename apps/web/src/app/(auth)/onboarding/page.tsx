@@ -91,7 +91,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
       </CardHeader>
       <CardContent>
         <ul className="space-y-2 text-sm">
-          <li className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4 bg-success px-1 text-foreground" /> Account created</li>
+          <li className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> Account created</li>
           {STEPS[me.role].map((s) => (
             <li key={s.href}>
               <Link href={s.href} className="flex items-center gap-2 hover:text-link"><Circle className="h-4 w-4 text-muted-foreground" /> {s.label}</Link>

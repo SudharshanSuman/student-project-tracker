@@ -1,26 +1,29 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Brutalist palette (SPT-8, supersedes SPT-7 Swiss): raw primaries only, no greys.
-   ink #000000 · paper #FFFFFF · highlight/muted blocks #FFFF00 · primary + links #0000FF
-   success #00FF00 · warning #FF00FF · destructive #FF0000
-   Status colours are used as BLOCKS with black text (green 15.3:1, magenta 6.7:1, red 5.3:1),
-   never as text on white, where green (1.4:1) and magenta (3.1:1) would be unreadable. */
+/* Swiss / Minimalist palette (SPT-7, replaces the SPEC §14 dark Indigo theme):
+   ink #000000 · paper #FFFFFF · warm off-white #F5F1E8 · rule #DDD8CF
+   accent #B38B6D (fills, rules, active states) · link #8A6446 (accent darkened for AA text contrast)
+   muted text #6E6E6E (brief's #808080 darkened: 3.9:1 → 5.1:1 on white, WCAG AA)
+   success olive #5C6B30 · warning ochre #8C5F0F · destructive rust #A63D2A */
 @layer base {
   :root {
     --background: 0 0% 100%;
     --card: 0 0% 100%;
-    --border: 0 0% 0%;
-    --primary: 240 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --link: 240 100% 50%;
-    --success: 120 100% 50%;
-    --warning: 300 100% 50%;
-    --destructive: 0 100% 50%;
+    --border: 39 16% 84%;
+    --primary: 26 32% 56%;
+    --primary-foreground: 0 0% 0%;
+    --link: 26 33% 41%;
+    --success: 75 38% 30%;
+    --warning: 37 81% 30%;
+    --destructive: 9 60% 41%;
     --foreground: 0 0% 0%;
-    --muted: 60 100% 50%;
-    --muted-foreground: 0 0% 0%;
+    --muted: 42 40% 94%;
+    --muted-foreground: 0 0% 43%;
     color-scheme: light;
   }
   * {
@@ -31,18 +34,13 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-  }
-  /* Brutalist: headings, labels, buttons and table heads are always bold. */
-  h1, h2, h3, h4, h5, h6, label, button, th, dt, legend {
-    @apply font-bold;
-  }
-  a.text-link, .text-link a {
-    @apply underline underline-offset-2;
+    font-feature-settings: "cv11", "ss01";
   }
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }
 
-/* Brutalist: every state change is instant. No transitions or animations anywhere. */
-*, *::before, *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

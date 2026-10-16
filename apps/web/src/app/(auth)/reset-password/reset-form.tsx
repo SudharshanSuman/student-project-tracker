@@ -56,7 +56,7 @@ export function ResetForm({ token }: { token: string }) {
           <Field label="Confirm password" htmlFor="confirm" error={formState.errors.confirm?.message}>
             <Input id="confirm" type="password" autoComplete="new-password" {...register("confirm")} />
           </Field>
-          {error ? <p role="alert" className="text-xs bg-destructive px-1 text-foreground">{error}</p> : null}
+          {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
           <Button className="w-full" disabled={formState.isSubmitting}>Update password</Button>
         </form>
       </CardContent>

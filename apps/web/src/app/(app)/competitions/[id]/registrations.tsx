@@ -138,7 +138,7 @@ export function Registrations({ competitionId, registrations, registrable }: { c
               <div className="flex flex-wrap items-center gap-1.5">
                 <StatusBadge status={r.status} />
                 {r.outcome !== "PENDING" ? <StatusBadge status={r.outcome} /> : null}
-                {r.outcome !== "PENDING" ? (r.outcomeVerifiedAt ? <span className="text-[11px] bg-success px-1 text-foreground">verified by {r.outcomeVerifiedBy?.name} · {formatDate(r.outcomeVerifiedAt)}</span> : <span className="text-[11px] bg-warning px-1 text-foreground">unverified claim</span>) : null}
+                {r.outcome !== "PENDING" ? (r.outcomeVerifiedAt ? <span className="text-[11px] text-success">verified by {r.outcomeVerifiedBy?.name} · {formatDate(r.outcomeVerifiedAt)}</span> : <span className="text-[11px] text-warning">unverified claim</span>) : null}
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-3 text-xs">

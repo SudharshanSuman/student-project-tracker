@@ -40,7 +40,7 @@ export default async function ReportsPage() {
                     <TD>
                       <StatusBadge status={r.expired ? "EXPIRED" : r.status} />
                       {r.status === "QUEUED" && r.attempts > 0 ? <span className="block text-[11px] text-muted-foreground">retry {r.attempts + 1}</span> : null}
-                      {r.error && r.status !== "COMPLETED" ? <span className="block max-w-[220px] text-[11px] bg-destructive px-1 text-foreground">{r.error}</span> : null}
+                      {r.error && r.status !== "COMPLETED" ? <span className="block max-w-[220px] text-[11px] text-destructive">{r.error}</span> : null}
                       {r.downloadable && r.expiresAt ? <span className="block text-[11px] text-muted-foreground">until {formatDate(r.expiresAt)}</span> : null}
                     </TD>
                     <TD className="text-xs">{r.requestedBy.name}<span className="block text-muted-foreground">{formatDateTime(r.createdAt)}</span></TD>

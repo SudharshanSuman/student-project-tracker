@@ -394,7 +394,7 @@ export function ConfigureWeightsDialog({
             />
           </div>
           <div className="rounded border p-2 text-xs">
-            <span className={isValid ? "bg-success px-1 text-foreground font-medium" : "bg-destructive px-1 text-foreground font-medium"}>
+            <span className={isValid ? "text-success font-medium" : "text-destructive font-medium"}>
               Total Weight: {sum} {isValid ? "✓ (Balanced)" : "✗ (Must equal 1.0)"}
             </span>
             <p className="mt-1 text-muted-foreground">
@@ -530,7 +530,7 @@ export function SyncGitHubButton({ projectId }: { projectId: string }) {
 
   return (
     <Button variant="outline" size="sm" onClick={onSync} disabled={loading} className="h-7 px-2 text-xs">
-      <RefreshCw className={`h-3 w-3 mr-1 ${loading ? "" : ""}`} />
+      <RefreshCw className={`h-3 w-3 mr-1 ${loading ? "animate-spin" : ""}`} />
       Sync Now
     </Button>
   );
@@ -572,7 +572,7 @@ export function ReviewAlertButton({
         <Button
           variant="outline"
           size="sm"
-          className={`h-7 px-2 text-xs ${status === "RESOLVED" ? "bg-success px-1 text-foreground" : "text-muted-foreground"}`}
+          className={`h-7 px-2 text-xs ${status === "RESOLVED" ? "text-success" : "text-muted-foreground"}`}
         >
           {status === "RESOLVED" ? "Resolve" : "Dismiss"}
         </Button>
