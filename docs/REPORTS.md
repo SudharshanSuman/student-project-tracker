@@ -30,7 +30,7 @@ Flow: `POST /api/reports` (admin/mentor) inserts a `GeneratedReport` row (`QUEUE
 
 Report types: Project, Cohort (all records to date), and period reports: Term, Attendance compliance, Milestone progression, Competition outcomes, Funding, Executive summary (admin). Period reports accept an optional cohort filter.
 
-**Discord engagement** renders a "pending integration" notice only. It shows no numbers until the Discord bot (SPT-3) is merged; then replace `builders.DISCORD_ENGAGEMENT` in `apps/api/src/reports/data.ts` with queries over `DiscordActivityDaily` / `DiscordVoiceSession`.
+**Discord engagement** aggregates SPT-3 telemetry per project: verified voice sessions/hours (sessions shorter than the integration minimum are counted separately and excluded), message counts (no content) and distinct active participants. It never lists individuals. If the bot is not configured or not ACTIVE, the report says so instead of estimating.
 
 ### Requirements
 A Chrome or Chromium binary (`puppeteer-core` does not download one). Set `PUPPETEER_EXECUTABLE_PATH`, or install Chrome/Chromium in a standard path. In Docker, install `chromium` in the API image and set `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium` (and `PUPPETEER_NO_SANDBOX=true` only if the container must run as root).

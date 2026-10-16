@@ -19,7 +19,7 @@ const DESCRIPTIONS: Record<ReportType, string> = {
   MILESTONE_PROGRESSION: "Milestone status by stage, reviews and stage changes.",
   COMPETITION_OUTCOMES: "Registrations and verified results.",
   FUNDING: "Verified vs estimated funding per currency and source.",
-  DISCORD_ENGAGEMENT: "Pending the Discord integration; renders an explicit placeholder.",
+  DISCORD_ENGAGEMENT: "Per-project verified voice hours and message counts from the Discord bot (aggregates only).",
   EXECUTIVE_SUMMARY: "Headline metrics for IIC leadership (admins only).",
 };
 

@@ -563,15 +563,56 @@ const builders: Record<ReportType, Builder> = {
     ];
   },
 
-  async DISCORD_ENGAGEMENT() {
-    // Discord telemetry is delivered by the SPT-3 integration; until it lands this report
-    // states that plainly instead of showing numbers.
-    return [{
-      kind: "notice",
-      title: "Discord engagement",
-      tone: "pending",
-      body: "Discord engagement reporting is pending the Discord bot integration. No engagement figures are shown because none have been collected through a verified integration yet.",
-    }];
+  async DISCORD_ENGAGEMENT({ scope, period }) {
+    // Aggregates only (per project). Voice time counts VERIFIED sessions (at least the configured
+    // minimum length); messages are counts only — no content is ever stored.
+    const integration = await prisma.discordIntegration.findFirst({ select: { status: true, guildName: true, lastHeartbeatAt: true, minSessionSeconds: true } });
+    const inPeriod = { gte: period.start, lte: period.end };
+    const [verified, incomplete, messages] = await Promise.all([
+      prisma.discordVoiceSession.groupBy({ by: ["projectId"], where: { projectId: { in: scope.projectIds }, status: "VERIFIED", joinedAt: inPeriod }, _sum: { durationSeconds: true }, _count: { _all: true } }),
+      prisma.discordVoiceSession.count({ where: { projectId: { in: scope.projectIds }, status: "INCOMPLETE", joinedAt: inPeriod } }),
+      prisma.discordActivityDaily.groupBy({ by: ["projectId"], where: { projectId: { in: scope.projectIds }, date: inPeriod }, _sum: { messageCount: true } }),
+    ]);
+    const people = await prisma.discordVoiceSession.groupBy({ by: ["projectId", "discordUserId"], where: { projectId: { in: scope.projectIds }, status: "VERIFIED", joinedAt: inPeriod } });
+    const hours = (sec: number) => (sec / 3600).toFixed(1);
+    const totalSec = verified.reduce((a, v) => a + (v._sum.durationSeconds ?? 0), 0);
+    const totalSessions = verified.reduce((a, v) => a + v._count._all, 0);
+    const totalMessages = messages.reduce((a, m) => a + (m._sum.messageCount ?? 0), 0);
+    const hasData = totalSessions > 0 || totalMessages > 0 || incomplete > 0;
+    const sections: Section[] = [];
+    if (!integration || integration.status !== "ACTIVE") {
+      sections.push({
+        kind: "notice",
+        title: "Integration status",
+        tone: "pending",
+        body: integration
+          ? `The Discord integration is ${human(integration.status)}${integration.lastHeartbeatAt ? ` (last heartbeat ${ymd(integration.lastHeartbeatAt)})` : ""}. Figures below cover only telemetry that was collected; gaps are not estimated.`
+          : "The Discord bot is not configured, so no engagement telemetry has been collected. No figures are estimated.",
+      });
+    }
+    if (integration || hasData) {
+      sections.push(
+        { kind: "metrics", title: "Engagement summary", items: [
+          { label: "Verified voice hours", value: hours(totalSec), hint: `${int(totalSessions)} sessions` },
+          { label: "Active participants", value: int(new Set(people.map((p) => p.discordUserId)).size), hint: "Linked Discord accounts" },
+          { label: "Messages (count only)", value: int(totalMessages) },
+          { label: "Short sessions excluded", value: int(incomplete), hint: `Under ${Math.round((integration?.minSessionSeconds ?? 300) / 60)} min` },
+        ] },
+        {
+          kind: "table",
+          title: "Engagement by project",
+          columns: ["Project", "Verified sessions", "Voice hours", "Messages", "Active participants"],
+          rows: scope.projects.map((p) => {
+            const v = verified.find((x) => x.projectId === p.id);
+            return [p.name, int(v?._count._all ?? 0), hours(v?._sum.durationSeconds ?? 0), int(messages.find((m) => m.projectId === p.id)?._sum.messageCount ?? 0), int(people.filter((x) => x.projectId === p.id).length)];
+          }),
+          numeric: [1, 2, 3, 4],
+          empty: "No projects in scope.",
+          note: "Only channels mapped to a project are counted. Individual activity is not listed in this report.",
+        },
+      );
+    }
+    return sections;
   },
 
   async EXECUTIVE_SUMMARY({ scope, period }) {

@@ -27,8 +27,11 @@ server.listen(config.API_PORT, async () => {
   if (!config.integrations.githubConfigured) logger.warn("GITHUB_TOKEN not set — GitHub sync standby mode");
   if (!resolveChromePath()) logger.warn("No Chrome/Chromium found — PDF reports will fail until PUPPETEER_EXECUTABLE_PATH is set");
 
-  await bootServices();
+  // PDF reports use their own Postgres queue; start them independently of the integration services,
+  // so a Discord/Redis boot failure can never stop report generation.
   if (config.REPORT_WORKER === "true") startReportWorker();
+
+  await bootServices();
 });
 
 async function shutdown(signal: string) {
