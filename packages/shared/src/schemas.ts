@@ -1,6 +1,10 @@
 import { z } from "zod";
 import {
   ATTENDANCE_ELIGIBILITY,
+  COMPETITION_OUTCOMES,
+  COMPETITION_REGISTRATION_STATUSES,
+  FUNDING_SOURCES,
+  REPORT_TYPES,
   EVENT_TYPES,
   MEMBERSHIP_ROLES,
   PROJECT_STAGES,
@@ -11,6 +15,7 @@ import {
   TASK_STATUSES,
   USER_STATUSES,
 } from "./constants";
+import { AMOUNT_RE, isIsoCurrency, normalizeAmount } from "./money";
 
 // Shared request schemas: used by React Hook Form on the client and re-validated
 // by the API on the server. Never trust the client copy alone.
@@ -286,3 +291,133 @@ export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
 });
+
+// ── Competitions ──
+export const competitionSchema = z
+  .object({
+    name: trimmed(200),
+    organizer: trimmed(200),
+    description: optionalText(5000),
+    registrationUrl: optionalUrl,
+    eligibility: optionalText(2000),
+    startDate: optionalDate,
+    endDate: optionalDate,
+    submissionDeadline: optionalDate,
+  })
+  .refine((v) => !v.startDate || !v.endDate || v.endDate >= v.startDate, { message: "End must be on or after start", path: ["endDate"] });
+export const updateCompetitionSchema = competitionSchema.innerType().partial();
+
+export const competitionListQuerySchema = z.object({
+  q: z.string().trim().max(120).optional(),
+  when: z.enum(["upcoming", "past", "all"]).default("all"),
+  outcome: z.enum(COMPETITION_OUTCOMES).optional(),
+  projectId: uuid.optional(),
+});
+
+export const registrationSchema = z.object({
+  projectId: uuid,
+  status: z.enum(COMPETITION_REGISTRATION_STATUSES).default("REGISTERED"),
+  submissionRepoUrl: optionalUrl,
+  demoUrl: optionalUrl,
+  pitchDeckUrl: optionalUrl,
+});
+
+export const updateRegistrationSchema = z.object({
+  status: z.enum(COMPETITION_REGISTRATION_STATUSES).optional(),
+  outcome: z.enum(COMPETITION_OUTCOMES).optional(),
+  outcomeEvidenceUrl: optionalUrl,
+  submissionRepoUrl: optionalUrl,
+  demoUrl: optionalUrl,
+  pitchDeckUrl: optionalUrl,
+  mentorNotes: optionalText(5000).optional(),
+});
+
+export const verifyOutcomeSchema = z.object({ note: trimmed(1000) });
+
+export const leaderboardQuerySchema = z.object({
+  cohortId: uuid.optional(),
+  from: optionalDate,
+  to: optionalDate,
+  includeUnverified: z.enum(["true", "false"]).optional(),
+});
+
+// ── Funding ──
+/** Decimal string, max Decimal(14,2), strictly positive. Numbers are rejected to avoid float rounding. */
+export const amountSchema = z
+  .string()
+  .trim()
+  .regex(AMOUNT_RE, "Enter an amount with up to 2 decimals")
+  .refine((v) => /[1-9]/.test(v), "Amount must be greater than zero")
+  .transform(normalizeAmount);
+export const currencySchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .length(3, "Use a 3-letter ISO currency code")
+  .refine(isIsoCurrency, "Unknown ISO 4217 currency code");
+
+export const fundingAwardSchema = z.object({
+  projectId: uuid,
+  registrationId: uuid.optional().nullable(),
+  source: z.enum(FUNDING_SOURCES),
+  title: trimmed(200),
+  amount: amountSchema,
+  currency: currencySchema,
+  awardedAt: optionalDate.optional(),
+  notes: optionalText(2000).optional(),
+});
+
+export const updateFundingAwardSchema = z.object({
+  title: trimmed(200).optional(),
+  notes: optionalText(2000).optional(),
+  source: z.enum(FUNDING_SOURCES).optional(),
+  amount: amountSchema.optional(),
+  currency: currencySchema.optional(),
+  awardedAt: optionalDate.optional(),
+  registrationId: uuid.optional().nullable(),
+});
+
+export const verifyFundingSchema = z.object({
+  decision: z.enum(["VERIFIED", "REJECTED"]),
+  note: trimmed(2000),
+});
+
+export const fundingChangeRequestSchema = z
+  .object({
+    amount: amountSchema.optional(),
+    currency: currencySchema.optional(),
+    source: z.enum(FUNDING_SOURCES).optional(),
+    awardedAt: z.coerce.date().optional(),
+    reason: trimmed(2000),
+  })
+  .refine((v) => v.amount !== undefined || v.currency !== undefined || v.source !== undefined || v.awardedAt !== undefined, {
+    message: "Propose at least one change",
+    path: ["amount"],
+  });
+
+export const reviewChangeRequestSchema = z.object({
+  decision: z.enum(["APPROVED", "REJECTED"]),
+  note: trimmed(2000),
+});
+
+// ── Reports ──
+const ymd = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD");
+export const createReportSchema = z
+  .object({
+    type: z.enum(REPORT_TYPES),
+    projectId: uuid.optional().nullable(),
+    cohortId: uuid.optional().nullable(),
+    periodStart: ymd.optional().nullable(),
+    periodEnd: ymd.optional().nullable(),
+  })
+  .refine((v) => v.type !== "PROJECT" || !!v.projectId, { message: "Pick a project", path: ["projectId"] })
+  .refine((v) => v.type !== "COHORT" || !!v.cohortId, { message: "Pick a cohort", path: ["cohortId"] })
+  .refine((v) => v.type === "PROJECT" || v.type === "COHORT" || (!!v.periodStart && !!v.periodEnd), {
+    message: "Pick a reporting period",
+    path: ["periodStart"],
+  })
+  .refine((v) => !v.periodStart || !v.periodEnd || v.periodEnd >= v.periodStart, { message: "End must be on or after start", path: ["periodEnd"] })
+  .refine(
+    (v) => !v.periodStart || !v.periodEnd || Date.parse(v.periodEnd) - Date.parse(v.periodStart) <= 3 * 366 * 86400_000,
+    { message: "Period can be at most 3 years", path: ["periodEnd"] },
+  );

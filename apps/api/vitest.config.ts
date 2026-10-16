@@ -28,7 +28,9 @@ export default defineConfig({
       INSTITUTION_EMAIL_DOMAINS: "uni.test",
       WEB_ORIGIN: "http://localhost:3000",
       APP_URL: "http://localhost:3000",
+      // Uploads and generated PDFs go to a throwaway directory, never the dev storage.
       STORAGE_DIR: mkdtempSync(join(tmpdir(), "iic-test-storage-")),
+      REPORT_CONCURRENCY: "1",
     },
   },
 });

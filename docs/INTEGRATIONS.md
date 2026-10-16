@@ -8,6 +8,7 @@ Secrets live in server environment variables or encrypted at rest in the databas
 | Discord bot | `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID` | **Built (SPT-3).** Voice presence tracking, aggregate message counts, bot restart recovery, privacy-preserving telemetry. Requires `GUILD_VOICE_STATES` and `GUILD_MESSAGES` (for count telemetry only; no message content is ever accessed). |
 | GitHub sync | `GITHUB_TOKEN`, `GITHUB_WEBHOOK_SECRET` | **Built (SPT-3).** Repo metadata, commit/PR summaries, webhook receiver with HMAC-SHA256 signature verification, encrypted token storage at rest per project. |
 | Redis / BullMQ | `REDIS_URL` | **Built (SPT-3).** BullMQ queues for Discord voice processing, GitHub sync, and maintenance jobs. Seamless in-memory fallback with exponential retry & backoff when Redis is unconfigured. |
+| PDF reports (Chromium) | `PUPPETEER_EXECUTABLE_PATH`, `PUPPETEER_NO_SANDBOX`, `REPORT_CONCURRENCY`, `REPORT_MAX_ATTEMPTS`, `REPORT_RETENTION_DAYS`, `REPORT_WORKER` | **Built (SPT-4).** See REPORTS.md. Uses its own Postgres-backed job queue (independent of the BullMQ/Redis queues above). |
 
 ---
 

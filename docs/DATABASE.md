@@ -11,8 +11,9 @@ PostgreSQL via Prisma (`apps/api/prisma/schema.prisma`, migrations in `apps/api/
 | Attendance | Event, AttendanceSession, AttendanceRecord, QrTokenRedemption | `unique(sessionId, userId)`; redeemed single-use token ids. |
 | Discord | DiscordIntegration, DiscordChannel, DiscordVoiceSession, DiscordActivityDaily | No message content columns. `externalKey` and `unique(date, channelId, discordUserId)` prevent duplicates. |
 | GitHub | GitHubIntegration, RepositoryActivityDaily | `unique(integrationId, date)`. |
-| Competitions & money | Competition, CompetitionRegistration, FundingAward | `Decimal(14,2)` + `Char(3)` ISO currency; verified vs estimated via `verification`. |
-| Other | Document, Notification, NotificationPreference, AuditLog, GeneratedReport, InactivityAlert, IntegrationLog, ProcessedExternalEvent, PlatformSetting | Notifications deduplicated by `unique(userId, dedupeKey)`. |
+| Competitions & money | Competition, CompetitionRegistration, FundingAward, FundingChangeRequest | `Decimal(14,2)` + `Char(3)` ISO currency; verified vs estimated via `verification`. Outcome verification (`outcomeVerifiedById/At`) on registrations. Change requests hold proposed/previous values for admin review. Competitions with registrations cannot be deleted (`Restrict`). |
+| Reports | GeneratedReport | Doubles as the job queue: `status`, `attempts`, `nextAttemptAt` (backoff), `startedAt`, `storageKey`, `sizeBytes`, `expiresAt`. |
+| Other | Document, Notification, NotificationPreference, AuditLog, InactivityAlert, IntegrationLog, ProcessedExternalEvent, PlatformSetting | Notifications deduplicated by `unique(userId, dedupeKey)`. |
 
 Multi-row changes (e.g. review + milestone status + audit + notifications) run in a single transaction.
 

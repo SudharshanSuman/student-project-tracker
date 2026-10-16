@@ -103,3 +103,23 @@ export const DEFAULT_STAGE_GATES: Record<ProjectStage, string[]> = {
     "Incubation application readiness reviewed",
   ],
 };
+
+export const COMPETITION_REGISTRATION_STATUSES = ["INTERESTED", "REGISTERED", "SUBMITTED", "WITHDRAWN"] as const;
+export const FUNDING_SOURCES = ["COMPETITION", "GRANT", "SPONSOR", "INSTITUTIONAL", "OTHER"] as const;
+export const FUNDING_VERIFICATIONS = ["ESTIMATED", "VERIFIED", "REJECTED"] as const;
+
+/** Leaderboard points per verified outcome. */
+export const OUTCOME_POINTS: Record<CompetitionOutcome, number> = { PENDING: 0, PARTICIPANT: 1, FINALIST: 3, WINNER: 5 };
+
+/** Report types that are scoped to one project / one cohort; the rest are period reports. */
+export const REPORT_TYPE_LABELS: Record<ReportType, string> = {
+  PROJECT: "Project report",
+  COHORT: "Cohort report",
+  TERM: "Term report",
+  ATTENDANCE_COMPLIANCE: "Attendance compliance",
+  MILESTONE_PROGRESSION: "Milestone progression",
+  COMPETITION_OUTCOMES: "Competition outcomes",
+  FUNDING: "Funding report",
+  DISCORD_ENGAGEMENT: "Discord engagement",
+  EXECUTIVE_SUMMARY: "Executive summary",
+};

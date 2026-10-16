@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { formatAmount } from "@iic/shared";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,12 +28,13 @@ export function relativeTime(value: string | Date): string {
   return rtf.format(Math.round(diff / 86400_000), "day");
 }
 
+/** Money arrives as exact decimal strings; Intl formats numeric strings without float rounding. */
 export function formatMoney(amount: string | number, currency: string): string {
-  const n = typeof amount === "string" ? Number(amount) : amount;
   try {
-    return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 2 }).format(n);
+    const nf = new Intl.NumberFormat("en-IN", { style: "currency", currency, minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return nf.format(amount as number);
   } catch {
-    return `${currency} ${n.toFixed(2)}`;
+    return formatAmount(String(amount), currency);
   }
 }
 

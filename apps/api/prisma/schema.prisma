@@ -184,6 +184,12 @@ enum ReportType {
   EXECUTIVE_SUMMARY
 }
 
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum ReportStatus {
   QUEUED
   RUNNING
@@ -228,12 +234,12 @@ model User {
 
   sessions              Session[]
   passwordResetTokens   PasswordResetToken[]
-  invitationsSent       Invitation[]             @relation("InvitedBy")
+  invitationsSent       Invitation[]              @relation("InvitedBy")
   memberships           ProjectMembership[]
-  mentoredProjects      Project[]                @relation("ProjectMentor")
-  createdProjects       Project[]                @relation("ProjectCreatedBy")
-  assignedTasks         Task[]                   @relation("TaskAssignee")
-  createdTasks          Task[]                   @relation("TaskCreatedBy")
+  mentoredProjects      Project[]                 @relation("ProjectMentor")
+  createdProjects       Project[]                 @relation("ProjectCreatedBy")
+  assignedTasks         Task[]                    @relation("TaskAssignee")
+  createdTasks          Task[]                    @relation("TaskCreatedBy")
   taskComments          TaskComment[]
   taskStatusChanges     TaskStatusHistory[]
   milestoneSubmissions  MilestoneSubmission[]
@@ -241,12 +247,15 @@ model User {
   stageChanges          ProjectStageHistory[]
   eventsCreated         Event[]
   attendanceSessions    AttendanceSession[]
-  attendanceRecords     AttendanceRecord[]       @relation("AttendanceUser")
-  attendanceCorrections AttendanceRecord[]       @relation("AttendanceCorrectedBy")
+  attendanceRecords     AttendanceRecord[]        @relation("AttendanceUser")
+  attendanceCorrections AttendanceRecord[]        @relation("AttendanceCorrectedBy")
   voiceSessions         DiscordVoiceSession[]
   competitionsCreated   Competition[]
-  fundingCreated        FundingAward[]           @relation("FundingCreatedBy")
-  fundingVerified       FundingAward[]           @relation("FundingVerifiedBy")
+  fundingCreated        FundingAward[]            @relation("FundingCreatedBy")
+  fundingVerified       FundingAward[]            @relation("FundingVerifiedBy")
+  outcomesVerified      CompetitionRegistration[] @relation("OutcomeVerifiedBy")
+  fundingChangeRequests FundingChangeRequest[]    @relation("FundingChangeRequestedBy")
+  fundingChangeReviews  FundingChangeRequest[]    @relation("FundingChangeReviewedBy")
   documents             Document[]
   notifications         Notification[]
   notificationPrefs     NotificationPreference[]
@@ -796,22 +805,28 @@ model Competition {
 }
 
 model CompetitionRegistration {
-  id                String                        @id @default(uuid()) @db.Uuid
-  competitionId     String                        @db.Uuid
-  projectId         String                        @db.Uuid
-  status            CompetitionRegistrationStatus @default(REGISTERED)
-  outcome           CompetitionOutcome            @default(PENDING)
-  submissionRepoUrl String?
-  demoUrl           String?
-  pitchDeckUrl      String?
-  mentorNotes       String?
-  createdAt         DateTime                      @default(now())
-  updatedAt         DateTime                      @updatedAt
+  id                  String                        @id @default(uuid()) @db.Uuid
+  competitionId       String                        @db.Uuid
+  projectId           String                        @db.Uuid
+  status              CompetitionRegistrationStatus @default(REGISTERED)
+  outcome             CompetitionOutcome            @default(PENDING)
+  submissionRepoUrl   String?
+  demoUrl             String?
+  pitchDeckUrl        String?
+  mentorNotes         String?
+  /// Outcome claims are unverified until the assigned mentor or an admin confirms them.
+  /// Any outcome change clears the verification.
+  outcomeVerifiedById String?                       @db.Uuid
+  outcomeVerifiedAt   DateTime?
+  outcomeEvidenceUrl  String?
+  createdAt           DateTime                      @default(now())
+  updatedAt           DateTime                      @updatedAt
 
-  competition Competition    @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  funding     FundingAward[]
-  documents   Document[]
+  competition       Competition    @relation(fields: [competitionId], references: [id], onDelete: Restrict)
+  project           Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  outcomeVerifiedBy User?          @relation("OutcomeVerifiedBy", fields: [outcomeVerifiedById], references: [id], onDelete: SetNull)
+  funding           FundingAward[]
+  documents         Document[]
 
   @@unique([competitionId, projectId])
   @@index([outcome])
@@ -835,14 +850,40 @@ model FundingAward {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
-  project      Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  registration CompetitionRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
-  verifiedBy   User?                    @relation("FundingVerifiedBy", fields: [verifiedById], references: [id], onDelete: SetNull)
-  createdBy    User                     @relation("FundingCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
-  documents    Document[]
+  project        Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  registration   CompetitionRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  verifiedBy     User?                    @relation("FundingVerifiedBy", fields: [verifiedById], references: [id], onDelete: SetNull)
+  createdBy      User                     @relation("FundingCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  documents      Document[]
+  changeRequests FundingChangeRequest[]
 
   @@index([projectId])
   @@index([verification, currency])
+}
+
+/// Material changes (amount, currency, source, award date) to a VERIFIED award go
+/// through an admin review; the requester can never approve their own request.
+model FundingChangeRequest {
+  id            String              @id @default(uuid()) @db.Uuid
+  awardId       String              @db.Uuid
+  requestedById String              @db.Uuid
+  /// Proposed values only (amount as a decimal string).
+  proposed      Json
+  /// Snapshot of the values at request time, for the audit trail.
+  previous      Json
+  reason        String
+  status        ChangeRequestStatus @default(PENDING)
+  reviewedById  String?             @db.Uuid
+  reviewedAt    DateTime?
+  reviewNote    String?
+  createdAt     DateTime            @default(now())
+
+  award       FundingAward @relation(fields: [awardId], references: [id], onDelete: Cascade)
+  requestedBy User         @relation("FundingChangeRequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  reviewedBy  User?        @relation("FundingChangeReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([awardId])
 }
 
 // ─────────────────── Documents, notifications ────────────────────
@@ -936,6 +977,10 @@ model GeneratedReport {
   storageKey    String?      @unique
   error         String?
   attempts      Int          @default(0)
+  /// Earliest time a queued retry may run (exponential backoff).
+  nextAttemptAt DateTime?
+  startedAt     DateTime?
+  sizeBytes     Int?
   requestedById String       @db.Uuid
   completedAt   DateTime?
   expiresAt     DateTime?

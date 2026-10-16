@@ -7,6 +7,8 @@ import { attachRealtime } from "./realtime.js";
 import { queueService } from "./services/queue.js";
 import { telemetryService } from "./services/telemetry.js";
 import { discordService } from "./services/discord.js";
+import { closeBrowserPool, resolveChromePath } from "./reports/browser-pool.js";
+import { startReportWorker, stopReportWorker } from "./reports/queue.js";
 
 const app = createApp();
 const server = createServer(app);
@@ -23,8 +25,10 @@ server.listen(config.API_PORT, async () => {
   logger.info({ port: config.API_PORT, env: config.NODE_ENV }, "IIC API listening");
   if (!config.integrations.discordConfigured) logger.warn("Discord credentials not set — Discord telemetry standby mode (see docs/INTEGRATIONS.md)");
   if (!config.integrations.githubConfigured) logger.warn("GITHUB_TOKEN not set — GitHub sync standby mode");
+  if (!resolveChromePath()) logger.warn("No Chrome/Chromium found — PDF reports will fail until PUPPETEER_EXECUTABLE_PATH is set");
 
   await bootServices();
+  if (config.REPORT_WORKER === "true") startReportWorker();
 });
 
 async function shutdown(signal: string) {
@@ -32,6 +36,8 @@ async function shutdown(signal: string) {
   server.close();
   await discordService.stop();
   await queueService.close();
+  stopReportWorker();
+  await closeBrowserPool();
   await prisma.$disconnect();
   process.exit(0);
 }
