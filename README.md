@@ -45,6 +45,7 @@ npm run typecheck   # all workspaces
 npm run lint
 npm test            # shared unit tests + API integration tests (needs TEST_DATABASE_URL)
 npm run build       # shared typecheck, API bundle (tsup), Next.js standalone build
+npm run test:e2e -w @iic/web   # Playwright browser E2E (starts the dev servers itself; needs the seeded dev DB)
 ```
 
 ## Docker

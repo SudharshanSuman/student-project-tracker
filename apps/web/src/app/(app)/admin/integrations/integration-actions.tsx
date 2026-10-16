@@ -16,6 +16,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ConfirmButton } from "@/components/ui/confirm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input, Select } from "@/components/ui/input";
 import { Field } from "@/components/ui/states";
@@ -197,26 +198,29 @@ export function MapChannelDialog({
 
 export function DeleteChannelButton({ channelId }: { channelId: string }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
   async function onDelete() {
-    if (!confirm("Are you sure you want to remove this channel mapping?")) return;
-    setLoading(true);
     try {
       await api(`/integrations/discord/channels/${channelId}`, { method: "DELETE" });
       toast.success("Channel mapping removed");
       router.refresh();
     } catch (err) {
       toast.error(errorMessage(err));
-    } finally {
-      setLoading(false);
     }
   }
 
   return (
-    <Button variant="ghost" size="sm" onClick={onDelete} disabled={loading} className="text-destructive h-7 px-2">
+    <ConfirmButton
+      title="Remove channel mapping?"
+      description="The channel will stop being monitored for Discord engagement telemetry."
+      confirmLabel="Remove"
+      destructive
+      variant="ghost"
+      size="sm"
+      onConfirm={onDelete}
+    >
       <Trash2 className="h-3 w-3" />
-    </Button>
+    </ConfirmButton>
   );
 }
 
@@ -542,16 +546,18 @@ export function ReviewAlertButton({
   status: "RESOLVED" | "DISMISSED";
 }) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function onReview() {
-    const note = prompt(`Enter optional note for marking this alert as ${status}:`);
     setLoading(true);
     try {
       await api(`/integrations/alerts/${alertId}/review`, {
-        body: { status, reviewNote: note || null },
+        body: { status, reviewNote: note.trim() || null },
       });
       toast.success(`Alert marked as ${status.toLowerCase()}`);
+      setOpen(false);
       router.refresh();
     } catch (err) {
       toast.error(errorMessage(err));
@@ -561,15 +567,26 @@ export function ReviewAlertButton({
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onReview}
-      disabled={loading}
-      className={`h-7 px-2 text-xs ${status === "RESOLVED" ? "text-success" : "text-muted-foreground"}`}
-    >
-      {status === "RESOLVED" ? "Resolve" : "Dismiss"}
-    </Button>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setNote(""); }}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className={`h-7 px-2 text-xs ${status === "RESOLVED" ? "text-success" : "text-muted-foreground"}`}
+        >
+          {status === "RESOLVED" ? "Resolve" : "Dismiss"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent title={`Mark alert as ${status.toLowerCase()}`} description="An optional note is kept with the review for the audit trail.">
+        <Field label="Note (optional)" htmlFor="alert-note">
+          <Input id="alert-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Why this alert is being closed" />
+        </Field>
+        <div className="flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button disabled={loading} onClick={onReview}>{loading ? "Working…" : "Confirm"}</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

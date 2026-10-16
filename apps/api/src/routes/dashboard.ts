@@ -72,7 +72,7 @@ dashboardRouter.get("/", async (req, res) => {
       _sum: { voiceSeconds: true, messageCount: true },
     }),
     prisma.competitionRegistration.count({ where: { projectId: inIds, status: { not: "WITHDRAWN" } } }),
-    prisma.competitionRegistration.count({ where: { projectId: inIds, outcome: "WINNER" } }),
+    prisma.competitionRegistration.count({ where: { projectId: inIds, outcome: "WINNER", outcomeVerifiedAt: { not: null } } }),
     prisma.fundingAward.groupBy({ by: ["currency", "verification", "source"], where: { projectId: inIds, verification: { not: "REJECTED" } }, _sum: { amount: true } }),
     prisma.auditLog.findMany({
       where: user.role === "ADMIN" && !f.projectId ? {} : { projectId: inIds },
@@ -126,7 +126,8 @@ dashboardRouter.get("/", async (req, res) => {
 
   const leaderboardRaw = await prisma.competitionRegistration.groupBy({
     by: ["projectId", "outcome"],
-    where: { projectId: inIds, outcome: { in: ["WINNER", "FINALIST"] } },
+    // Verified outcomes only — matches the authoritative /competitions/leaderboard rule.
+    where: { projectId: inIds, outcome: { in: ["WINNER", "FINALIST"] }, outcomeVerifiedAt: { not: null } },
     _count: { _all: true },
   });
   const board = new Map<string, { wins: number; finals: number }>();

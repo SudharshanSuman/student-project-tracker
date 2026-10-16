@@ -41,4 +41,19 @@ describe("dashboard metrics", () => {
     expect(d.metrics.activeProjects).toBe(0);
     expect(d.metrics.taskCompletionRate).toBeNull();
   });
+
+  it("competitionWins and leaderboard count only verified outcomes, like /competitions/leaderboard", async () => {
+    const admin = await loginAs(w.admin.email);
+    const competition = await admin.post("/api/competitions").send({ name: "Smart India Hackathon", organizer: "AICTE", submissionDeadline: "2026-12-01", endDate: "2026-12-10" });
+    const r1 = (await admin.post(`/api/competitions/${competition.body.competition.id}/registrations`).send({ projectId: w.project.id })).body.registration;
+    const r2 = (await admin.post(`/api/competitions/${competition.body.competition.id}/registrations`).send({ projectId: w.otherProject.id })).body.registration;
+    // Alpha's win is verified; Beta's win is a self-reported claim, never verified.
+    await admin.patch(`/api/competition-registrations/${r1.id}`).send({ outcome: "WINNER" });
+    await admin.post(`/api/competition-registrations/${r1.id}/verify-outcome`).send({ note: "ok" });
+    await admin.patch(`/api/competition-registrations/${r2.id}`).send({ outcome: "WINNER" }); // left unverified
+
+    const d = (await admin.get("/api/dashboard")).body;
+    expect(d.metrics.competitionWins).toBe(1);
+    expect(d.leaderboard).toEqual([expect.objectContaining({ name: "Alpha", wins: 1 })]);
+  });
 });

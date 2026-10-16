@@ -21,8 +21,9 @@ COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/package.json ./apps/api/
 WORKDIR /app/apps/api
-# Generated reports/uploads (mount a volume here in production).
-RUN mkdir -p storage && chown node:node storage
+# STORAGE_DIR in docker-compose.yml points at /data/storage (a named volume); create and
+# own it here so Docker copies this ownership onto the volume on first start, not root:root.
+RUN mkdir -p /data/storage && chown node:node /data/storage
 USER node
 EXPOSE 4000
 # Apply pending migrations, then start.

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckCircle2, MapPin, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { api, ApiError, errorMessage } from "@/lib/api-client";
+import { api, errorMessage } from "@/lib/api-client";
 
 type Result = { ok: true; session: string; at: string } | { ok: false; message: string };
 
@@ -31,7 +31,7 @@ export function CheckIn({ token }: { token: string }) {
       const r = await api<{ record: { checkedInAt: string }; session: { name: string } }>("/attendance/check-in", { body: { token, location } });
       setResult({ ok: true, session: r.session.name, at: r.record.checkedInAt });
     } catch (e) {
-      setResult({ ok: false, message: e instanceof ApiError ? e.message : errorMessage(e) });
+      setResult({ ok: false, message: errorMessage(e) });
     } finally {
       setBusy(false);
     }
