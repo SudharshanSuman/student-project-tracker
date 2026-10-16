@@ -38,11 +38,11 @@ function Card({ task, onOpen, draggable }: { task: BoardTask; onOpen: () => void
     <div
       ref={setNodeRef}
       style={transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined}
-      className={cn("rounded-md border bg-background p-3 text-sm shadow-sm", isDragging && "z-10 opacity-80 ring-2 ring-primary", draggable && "cursor-grab")}
+      className={cn("rounded-md border bg-background p-3 text-sm", isDragging && "z-10 opacity-80 ring-2 ring-primary", draggable && "cursor-grab")}
       {...attributes}
       {...listeners}
     >
-      <button type="button" className="block w-full text-left font-medium hover:text-primary" onClick={onOpen} onPointerDown={(e) => e.stopPropagation()}>
+      <button type="button" className="block w-full text-left font-medium hover:text-link" onClick={onOpen} onPointerDown={(e) => e.stopPropagation()}>
         {task.title}
       </button>
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -55,7 +55,7 @@ function Card({ task, onOpen, draggable }: { task: BoardTask; onOpen: () => void
         <span className="flex items-center gap-2">
           {task.dependencies.length ? <span className="flex items-center gap-0.5"><Link2 className="h-3 w-3" />{task.dependencies.length}</span> : null}
           {task._count.comments ? <span className="flex items-center gap-0.5"><MessageSquare className="h-3 w-3" />{task._count.comments}</span> : null}
-          {task.dueDate ? <span className={cn("flex items-center gap-0.5 font-mono", overdue && "text-red-400")}><CalendarClock className="h-3 w-3" />{formatDate(task.dueDate)}</span> : null}
+          {task.dueDate ? <span className={cn("flex items-center gap-0.5 tabular-nums", overdue && "text-destructive")}><CalendarClock className="h-3 w-3" />{formatDate(task.dueDate)}</span> : null}
         </span>
       </div>
     </div>
@@ -69,13 +69,13 @@ function Column({ status, children, count, dropAllowed }: { status: TaskStatus; 
       ref={setNodeRef}
       aria-label={`${TASK_STATUS_LABELS[status]} column`}
       className={cn(
-        "flex min-h-[300px] flex-col gap-2 rounded-lg border bg-card/60 p-3 transition-colors",
+        "flex min-h-[300px] flex-col gap-2 rounded-lg border bg-muted p-3 transition-colors",
         isOver && dropAllowed && "border-primary/60 bg-primary/5",
         isOver && dropAllowed === false && "border-destructive/60",
       )}
     >
       <h2 className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {TASK_STATUS_LABELS[status]} <span className="font-mono">{count}</span>
+        {TASK_STATUS_LABELS[status]} <span className="tabular-nums">{count}</span>
       </h2>
       {children}
     </section>

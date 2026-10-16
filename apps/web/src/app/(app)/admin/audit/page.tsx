@@ -29,7 +29,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
               <TBody>
                 {data.entries.map((e) => (
                   <TR key={e.id}>
-                    <TD className="whitespace-nowrap font-mono text-xs">{formatDateTime(e.createdAt)}</TD>
+                    <TD className="whitespace-nowrap tabular-nums text-xs">{formatDateTime(e.createdAt)}</TD>
                     <TD className="text-xs">{e.actor?.name ?? "System"}</TD>
                     <TD className="font-mono text-xs">{e.action}</TD>
                     <TD className="text-xs">{e.entityType}{e.entityId ? <span className="block font-mono text-[10px] text-muted-foreground">{e.entityId.slice(0, 8)}…</span> : null}</TD>

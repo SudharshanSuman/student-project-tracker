@@ -2,12 +2,13 @@
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { STAGE_LABELS, TASK_STATUS_LABELS, type ProjectStage, type TaskStatus } from "@iic/shared";
 
-const AXIS = { stroke: "#9CA3AF", fontSize: 11 };
+// Swiss palette (see globals.css): ink, rule, accent, olive/ochre/rust semantics.
+const AXIS = { stroke: "#6E6E6E", fontSize: 11 };
 const TOOLTIP = {
-  contentStyle: { background: "#111827", border: "1px solid #1F2937", borderRadius: 8, fontSize: 12 },
-  labelStyle: { color: "#F9FAFB" },
-  itemStyle: { color: "#F9FAFB" },
-  cursor: { fill: "rgba(99,102,241,0.08)" },
+  contentStyle: { background: "#FFFFFF", border: "1px solid #000000", borderRadius: 0, fontSize: 12 },
+  labelStyle: { color: "#000000" },
+  itemStyle: { color: "#000000" },
+  cursor: { fill: "rgba(179,139,109,0.12)" },
 };
 
 export function StageChart({ data }: { data: { stage: ProjectStage; count: number }[] }) {
@@ -15,17 +16,17 @@ export function StageChart({ data }: { data: { stage: ProjectStage; count: numbe
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid stroke="#1F2937" vertical={false} />
+        <CartesianGrid stroke="#DDD8CF" vertical={false} />
         <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={false} interval={0} />
         <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
         <Tooltip {...TOOLTIP} />
-        <Bar dataKey="count" name="Projects" fill="#6366F1" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="count" name="Projects" fill="#000000" radius={0} />
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
-const STATUS_COLORS: Record<TaskStatus, string> = { TODO: "#4B5563", IN_PROGRESS: "#6366F1", REVIEW: "#F59E0B", DONE: "#10B981" };
+const STATUS_COLORS: Record<TaskStatus, string> = { TODO: "#C9C3B6", IN_PROGRESS: "#B38B6D", REVIEW: "#8C5F0F", DONE: "#5C6B30" };
 
 export function TaskStatusChart({ data }: { data: { status: TaskStatus; count: number }[] }) {
   const rows = data.map((d) => ({ name: TASK_STATUS_LABELS[d.status], value: d.count, status: d.status }));
@@ -46,7 +47,7 @@ export function TaskStatusChart({ data }: { data: { status: TaskStatus; count: n
           <li key={r.status} className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full" style={{ background: STATUS_COLORS[r.status] }} />
             <span className="text-muted-foreground">{r.name}</span>
-            <span className="font-mono">{r.value}</span>
+            <span className="tabular-nums">{r.value}</span>
           </li>
         ))}
       </ul>
@@ -59,11 +60,11 @@ export function CompletedChart({ data }: { data: { week: string; completed: numb
   return (
     <ResponsiveContainer width="100%" height={160}>
       <BarChart data={rows} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-        <CartesianGrid stroke="#1F2937" vertical={false} />
+        <CartesianGrid stroke="#DDD8CF" vertical={false} />
         <XAxis dataKey="week" tick={AXIS} tickLine={false} axisLine={false} />
         <YAxis allowDecimals={false} tick={AXIS} tickLine={false} axisLine={false} />
         <Tooltip {...TOOLTIP} />
-        <Bar dataKey="completed" name="Tasks completed" fill="#10B981" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="completed" name="Tasks completed" fill="#5C6B30" radius={0} />
       </BarChart>
     </ResponsiveContainer>
   );

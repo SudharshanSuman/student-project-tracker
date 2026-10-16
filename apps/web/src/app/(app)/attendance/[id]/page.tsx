@@ -52,7 +52,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
                   {s.records.map((r) => (
                     <TR key={r.id}>
                       <TD><span className="block">{r.user.name}</span><span className="text-xs text-muted-foreground">{r.user.email}</span></TD>
-                      <TD className="font-mono text-xs">{formatDateTime(r.checkedInAt)}</TD>
+                      <TD className="tabular-nums text-xs">{formatDateTime(r.checkedInAt)}</TD>
                       <TD className="text-xs">{r.method}</TD>
                       <TD><StatusBadge status={r.status} />{r.correctionReason ? <span className="block text-[11px] text-muted-foreground" title={r.correctionReason}>{r.correctedBy?.name}: {r.correctionReason}</span> : null}</TD>
                       <TD className="text-xs text-muted-foreground">{r.locationVerified === null ? "—" : r.locationVerified ? "within radius" : "outside radius"}</TD>

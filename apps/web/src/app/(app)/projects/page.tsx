@@ -60,7 +60,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {data.projects.map((p) => (
             <Link key={p.id} href={`/projects/${p.id}`} className="group">
-              <Card className="flex h-full flex-col gap-3 p-4 transition-colors group-hover:border-primary/50">
+              <Card className="flex h-full flex-col gap-3 p-4 transition-colors group-hover:border-foreground">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <h2 className="truncate font-semibold">{p.name}</h2>
@@ -75,7 +75,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
                 </div>
                 <div className="flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {p._count.memberships} · lead {p.lead?.name ?? "—"}</span>
-                  <span className="font-mono">{p.openTasks ?? 0} open · {p.overdueTasks ?? 0} late</span>
+                  <span className="tabular-nums">{p.openTasks ?? 0} open · {p.overdueTasks ?? 0} late</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground">Mentor {p.mentor?.name ?? "unassigned"} · active {relativeTime(p.lastActivityAt)}</p>
               </Card>

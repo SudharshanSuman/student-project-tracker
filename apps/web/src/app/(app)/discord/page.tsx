@@ -30,7 +30,7 @@ export default async function DiscordPage() {
     <>
       <PageHeader title="Discord analytics" description="Privacy-preserving aggregates: voice duration and message counts only. No message content is ever collected." />
       {!d.configured ? (
-        <EmptyState icon={<Headphones className="h-6 w-6" />} title="Discord is not connected" description="Telemetry appears here once an admin configures the bot. Nothing is estimated or invented in the meantime." action={<Link href="/admin/integrations" className="text-sm text-primary">Integration settings →</Link>} />
+        <EmptyState icon={<Headphones className="h-6 w-6" />} title="Discord is not connected" description="Telemetry appears here once an admin configures the bot. Nothing is estimated or invented in the meantime." action={<Link href="/admin/integrations" className="text-sm text-link">Integration settings →</Link>} />
       ) : (
         <>
           <div className="mb-4 grid gap-4 sm:grid-cols-3">
@@ -42,7 +42,7 @@ export default async function DiscordPage() {
             <CardHeader><CardTitle>Team totals (30 days)</CardTitle></CardHeader>
             <CardContent className="p-0">
               <Table><THead><TR><TH>Project</TH><TH>Voice hours</TH><TH>Messages</TH></TR></THead>
-                <TBody>{totals.map((t) => <TR key={t.id}><TD>{t.name}</TD><TD className="font-mono">{t.voiceHours.toFixed(1)}</TD><TD className="font-mono">{t.messages}</TD></TR>)}</TBody>
+                <TBody>{totals.map((t) => <TR key={t.id}><TD>{t.name}</TD><TD className="tabular-nums">{t.voiceHours.toFixed(1)}</TD><TD className="tabular-nums">{t.messages}</TD></TR>)}</TBody>
               </Table>
             </CardContent>
           </Card>
@@ -52,7 +52,7 @@ export default async function DiscordPage() {
               <CardContent className="p-0">
                 {d.sessions.length === 0 ? <p className="px-4 pb-4 text-xs text-muted-foreground">No voice sessions recorded.</p> : (
                   <Table><THead><TR><TH>Member</TH><TH>Project</TH><TH>Joined</TH><TH>Duration</TH><TH>Status</TH></TR></THead>
-                    <TBody>{d.sessions.map((s) => <TR key={s.id}><TD>{s.user?.name ?? "Unlinked account"}</TD><TD>{s.project?.name ?? "—"}</TD><TD className="font-mono text-xs">{formatDateTime(s.joinedAt)}</TD><TD className="font-mono text-xs">{s.durationSeconds ? `${Math.round(s.durationSeconds / 60)} min` : "—"}</TD><TD><StatusBadge status={s.status} /></TD></TR>)}</TBody>
+                    <TBody>{d.sessions.map((s) => <TR key={s.id}><TD>{s.user?.name ?? "Unlinked account"}</TD><TD>{s.project?.name ?? "—"}</TD><TD className="tabular-nums text-xs">{formatDateTime(s.joinedAt)}</TD><TD className="tabular-nums text-xs">{s.durationSeconds ? `${Math.round(s.durationSeconds / 60)} min` : "—"}</TD><TD><StatusBadge status={s.status} /></TD></TR>)}</TBody>
                   </Table>
                 )}
               </CardContent>

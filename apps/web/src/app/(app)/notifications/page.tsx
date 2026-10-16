@@ -25,8 +25,8 @@ export default async function NotificationsPage({ searchParams }: { searchParams
     <>
       <PageHeader title="Notifications" description={`${data.unread} unread`} actions={<>{data.unread ? <MarkAllRead /> : null}<Preferences preferences={prefs.preferences} /></>} />
       <nav className="mb-4 flex gap-1">
-        <Link href="/notifications" className={cn("rounded-md border px-3 py-1 text-xs", sp.unread !== "true" && "border-primary/60 bg-primary/15")}>All</Link>
-        <Link href="/notifications?unread=true" className={cn("rounded-md border px-3 py-1 text-xs", sp.unread === "true" && "border-primary/60 bg-primary/15")}>Unread</Link>
+        <Link href="/notifications" className={cn("rounded-md border px-3 py-1 text-xs", sp.unread !== "true" && "border-foreground bg-foreground text-background")}>All</Link>
+        <Link href="/notifications?unread=true" className={cn("rounded-md border px-3 py-1 text-xs", sp.unread === "true" && "border-foreground bg-foreground text-background")}>Unread</Link>
       </nav>
       {data.notifications.length === 0 ? <EmptyState icon={<Bell className="h-6 w-6" />} title="Nothing here" description="Task assignments, reviews, deadlines and event reminders appear here." /> : (
         <Card>
@@ -34,9 +34,9 @@ export default async function NotificationsPage({ searchParams }: { searchParams
             {data.notifications.map((n) => (
               <div key={n.id} className={cn("flex items-start justify-between gap-3 px-4 py-3", !n.readAt && "bg-primary/5")}>
                 <div className="min-w-0">
-                  <p className="text-sm">{!n.readAt ? <span className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" aria-label="Unread" /> : null}{n.link ? <Link href={n.link} className="hover:text-primary">{n.title}</Link> : n.title}</p>
+                  <p className="text-sm">{!n.readAt ? <span className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" aria-label="Unread" /> : null}{n.link ? <Link href={n.link} className="hover:text-link">{n.title}</Link> : n.title}</p>
                   {n.body ? <p className="truncate text-xs text-muted-foreground">{n.body}</p> : null}
-                  <p className="font-mono text-[11px] text-muted-foreground">{formatDateTime(n.createdAt)} · {n.type}</p>
+                  <p className="tabular-nums text-[11px] text-muted-foreground">{formatDateTime(n.createdAt)} · {n.type}</p>
                 </div>
                 {!n.readAt ? <MarkRead id={n.id} /> : null}
               </div>

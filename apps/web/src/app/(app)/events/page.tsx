@@ -27,7 +27,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
       <PageHeader title="Event management" description="Workshops, mentoring sessions, demo days and hackathons." actions={canManage ? <NewEventDialog cohorts={cohorts.cohorts} /> : null} />
       <nav className="mb-4 flex gap-1" aria-label="Event period">
         {(["upcoming", "past", "all"] as const).map((w) => (
-          <Link key={w} href={`/events?when=${w}`} aria-current={when === w ? "page" : undefined} className={cn("rounded-md border px-3 py-1 text-xs capitalize", when === w ? "border-primary/60 bg-primary/15" : "hover:bg-muted")}>{w}</Link>
+          <Link key={w} href={`/events?when=${w}`} aria-current={when === w ? "page" : undefined} className={cn("rounded-md border px-3 py-1 text-xs capitalize", when === w ? "border-foreground bg-foreground text-background" : "hover:bg-muted")}>{w}</Link>
         ))}
       </nav>
       {events.length === 0 ? (
@@ -39,7 +39,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h2 className="font-semibold">{e.title}</h2>
-                  <p className="font-mono text-xs text-muted-foreground">{formatDateTime(e.startsAt)} – {formatDateTime(e.endsAt)}</p>
+                  <p className="tabular-nums text-xs text-muted-foreground">{formatDateTime(e.startsAt)} – {formatDateTime(e.endsAt)}</p>
                 </div>
                 <Badge variant="default">{humanize(e.type)}</Badge>
               </div>
@@ -47,7 +47,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
               <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{e.location ?? "No location"}{e.cohort ? ` · ${e.cohort.name}` : ""}</span>
                 <span className="flex items-center gap-2">
-                  <Link href="/attendance" className="text-primary">{e._count.sessions} attendance session{e._count.sessions === 1 ? "" : "s"}</Link>
+                  <Link href="/attendance" className="text-link">{e._count.sessions} attendance session{e._count.sessions === 1 ? "" : "s"}</Link>
                   {canManage ? <DeleteEventButton id={e.id} title={e.title} /> : null}
                 </span>
               </div>

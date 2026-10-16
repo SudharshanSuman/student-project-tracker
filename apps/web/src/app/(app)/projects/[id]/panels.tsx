@@ -140,7 +140,7 @@ export function MembersPanel({ projectId, memberships, canManage, isAdmin }: {
         {memberships.length === 0 ? <p className="text-xs text-muted-foreground">No members yet.</p> : memberships.map((m) => (
           <div key={m.id} className="flex items-center justify-between gap-2 text-sm">
             <div className="min-w-0">
-              <p className="truncate">{m.user.name} {m.role === "LEAD" ? <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-primary">LEAD</span> : null}</p>
+              <p className="truncate">{m.user.name} {m.role === "LEAD" ? <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">LEAD</span> : null}</p>
               <p className="truncate text-xs text-muted-foreground">{m.user.email}</p>
             </div>
             {canManage && (m.role !== "LEAD" || isAdmin) ? (

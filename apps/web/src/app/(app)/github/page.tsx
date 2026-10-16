@@ -53,7 +53,7 @@ export default async function GithubPage() {
           <p className="font-medium text-foreground">GitHub sync is not configured globally</p>
           <p className="mt-1">
             An admin can set <span className="font-mono">GITHUB_TOKEN</span> (read-only, fine-grained) in the environment, or link individual repositories with scoped tokens. Repository links below are shown as entered; no activity is synced or estimated until configured.{" "}
-            <Link href="/admin/integrations" className="text-primary hover:underline">
+            <Link href="/admin/integrations" className="text-link hover:underline">
               Setup →
             </Link>
           </p>
@@ -80,7 +80,7 @@ export default async function GithubPage() {
                 {d.projects.map((p) => (
                   <TR key={p.id}>
                     <TD>
-                      <Link href={`/projects/${p.id}`} className="hover:text-primary font-medium">
+                      <Link href={`/projects/${p.id}`} className="hover:text-link font-medium">
                         {p.name}
                       </Link>
                     </TD>
@@ -94,7 +94,7 @@ export default async function GithubPage() {
                           href={p.repoUrl}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                          className="inline-flex items-center gap-1 text-link hover:underline"
                         >
                           link <ExternalLink className="h-3 w-3" />
                         </a>
@@ -109,7 +109,7 @@ export default async function GithubPage() {
                         <span className="text-xs text-muted-foreground">Not linked</span>
                       )}
                     </TD>
-                    <TD className="font-mono text-xs">{formatDateTime(p.github?.latestCommitAt)}</TD>
+                    <TD className="tabular-nums text-xs">{formatDateTime(p.github?.latestCommitAt)}</TD>
                     <TD className="font-mono text-xs">
                       {p.github ? p.github.activity.reduce((s, a) => s + a.commitCount, 0) : "—"}
                     </TD>

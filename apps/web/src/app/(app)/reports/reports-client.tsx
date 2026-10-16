@@ -39,7 +39,7 @@ export function GenerateReport({ projects, cohorts, isAdmin }: { projects: { id:
   const needsPeriod = type !== "PROJECT" && type !== "COHORT";
   return (
     <Card className="mb-4">
-      <CardHeader><CardTitle className="flex items-center gap-2"><FilePlus2 className="h-4 w-4 text-primary" /> Generate a report</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="flex items-center gap-2"><FilePlus2 className="h-4 w-4 text-link" /> Generate a report</CardTitle></CardHeader>
       <CardContent>
         <form className="grid gap-3 md:grid-cols-[220px_1fr_1fr_auto] md:items-end" onSubmit={async (e) => {
           e.preventDefault();

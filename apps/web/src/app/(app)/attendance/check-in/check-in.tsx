@@ -49,7 +49,7 @@ export function CheckIn({ token }: { token: string }) {
             result.ok ? (
               <div className="flex items-start gap-3 text-sm"><CheckCircle2 className="h-5 w-5 text-success" /><div><p className="font-medium">Checked in to {result.session}</p><p className="text-muted-foreground">{new Date(result.at).toLocaleString()}</p></div></div>
             ) : (
-              <div className="flex items-start gap-3 text-sm"><XCircle className="h-5 w-5 text-red-400" /><p>{result.message}</p></div>
+              <div className="flex items-start gap-3 text-sm"><XCircle className="h-5 w-5 text-destructive" /><p>{result.message}</p></div>
             )
           ) : (
             <>

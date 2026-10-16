@@ -43,7 +43,7 @@ function NotificationBell() {
     <Link href="/notifications" className="relative rounded-md p-2 hover:bg-muted" aria-label={`Notifications, ${unread} unread`}>
       <Bell className="h-4 w-4" />
       {unread > 0 ? (
-        <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 font-mono text-[10px]">{unread > 99 ? "99+" : unread}</span>
+        <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center bg-primary px-1 tabular-nums text-[10px]">{unread > 99 ? "99+" : unread}</span>
       ) : null}
     </Link>
   );
@@ -61,14 +61,14 @@ export function Topbar({ name, email, role }: { name: string; email: string; rol
       <NotificationBell />
       <DropdownMenu.Root>
         <DropdownMenu.Trigger className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted" aria-label="Account menu">
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-primary/20 text-xs font-semibold text-primary">{initials(name)}</span>
+          <span className="grid h-7 w-7 place-items-center bg-primary/20 text-xs font-semibold text-link">{initials(name)}</span>
           <span className="hidden text-left sm:block">
             <span className="block text-xs font-medium leading-tight">{name}</span>
             <span className="block text-[11px] leading-tight text-muted-foreground">{ROLE_LABELS[role]}</span>
           </span>
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
-          <DropdownMenu.Content align="end" sideOffset={6} className="z-50 min-w-48 rounded-md border bg-card p-1 text-sm shadow-lg">
+          <DropdownMenu.Content align="end" sideOffset={6} className="z-50 min-w-48 rounded-md border bg-card p-1 text-sm">
             <div className="px-2 py-1.5 text-xs text-muted-foreground">{email}</div>
             <DropdownMenu.Separator className="my-1 h-px bg-border" />
             <DropdownMenu.Item asChild className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 outline-none data-[highlighted]:bg-muted">

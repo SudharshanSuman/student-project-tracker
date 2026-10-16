@@ -37,13 +37,13 @@ export default async function CompetitionPage({ params }: { params: Promise<{ id
           <CardContent className="space-y-3 text-sm">
             {c.description ? <p className="text-muted-foreground">{c.description}</p> : null}
             <dl className="grid grid-cols-2 gap-2 text-xs">
-              <dt className="text-muted-foreground">Starts</dt><dd className="font-mono">{formatDate(c.startDate)}</dd>
-              <dt className="text-muted-foreground">Ends</dt><dd className="font-mono">{formatDate(c.endDate)}</dd>
-              <dt className="text-muted-foreground">Submission deadline</dt><dd className="font-mono">{formatDate(c.submissionDeadline)}</dd>
-              <dt className="text-muted-foreground">Registrations</dt><dd className="font-mono">{c._count.registrations}</dd>
+              <dt className="text-muted-foreground">Starts</dt><dd className="tabular-nums">{formatDate(c.startDate)}</dd>
+              <dt className="text-muted-foreground">Ends</dt><dd className="tabular-nums">{formatDate(c.endDate)}</dd>
+              <dt className="text-muted-foreground">Submission deadline</dt><dd className="tabular-nums">{formatDate(c.submissionDeadline)}</dd>
+              <dt className="text-muted-foreground">Registrations</dt><dd className="tabular-nums">{c._count.registrations}</dd>
             </dl>
             {c.eligibility ? <div><p className="text-xs font-medium">Eligibility</p><p className="text-xs text-muted-foreground">{c.eligibility}</p></div> : null}
-            {c.registrationUrl ? <a href={c.registrationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">Registration page <ExternalLink className="h-3 w-3" /></a> : null}
+            {c.registrationUrl ? <a href={c.registrationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-link hover:underline">Registration page <ExternalLink className="h-3 w-3" /></a> : null}
           </CardContent>
         </Card>
       </div>

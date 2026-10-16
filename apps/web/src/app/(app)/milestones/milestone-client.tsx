@@ -82,10 +82,10 @@ export function MilestoneDialog({ id }: { id: string }) {
                     <li key={s.id} className="rounded-md border p-3 text-sm">
                       <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>{s.submittedBy.name} · {formatDateTime(s.submittedAt)}</span><StatusBadge status={s.status} /></div>
                       <p className="mt-1 whitespace-pre-wrap">{s.notes}</p>
-                      {s.evidenceUrl ? <a href={s.evidenceUrl} target="_blank" rel="noreferrer noopener" className="mt-1 inline-flex items-center gap-1 text-xs text-primary">Evidence <ExternalLink className="h-3 w-3" /></a> : null}
+                      {s.evidenceUrl ? <a href={s.evidenceUrl} target="_blank" rel="noreferrer noopener" className="mt-1 inline-flex items-center gap-1 text-xs text-link">Evidence <ExternalLink className="h-3 w-3" /></a> : null}
                       {s.review ? (
                         <div className="mt-2 border-t pt-2 text-xs">
-                          <span className={s.review.decision === "APPROVED" ? "text-success" : "text-red-400"}>{s.review.decision === "APPROVED" ? "Approved" : "Rejected"}</span> by {s.review.reviewer.name} · {formatDateTime(s.review.reviewedAt)}
+                          <span className={s.review.decision === "APPROVED" ? "text-success" : "text-destructive"}>{s.review.decision === "APPROVED" ? "Approved" : "Rejected"}</span> by {s.review.reviewer.name} · {formatDateTime(s.review.reviewedAt)}
                           <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{s.review.comment}</p>
                         </div>
                       ) : null}

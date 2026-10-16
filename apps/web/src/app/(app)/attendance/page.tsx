@@ -50,13 +50,13 @@ export default async function AttendancePage() {
                 {sessions.map((s) => (
                   <TR key={s.id}>
                     <TD>
-                      {canManage ? <Link className="font-medium hover:text-primary" href={`/attendance/${s.id}`}>{s.name}</Link> : <span className="font-medium">{s.name}</span>}
+                      {canManage ? <Link className="font-medium hover:text-link" href={`/attendance/${s.id}`}>{s.name}</Link> : <span className="font-medium">{s.name}</span>}
                       <span className="block text-xs text-muted-foreground">{s.event?.title ?? "Standalone"}{s.location ? ` · ${s.location}` : ""}</span>
                     </TD>
-                    <TD className="font-mono text-xs">{formatDateTime(s.startsAt)}</TD>
+                    <TD className="tabular-nums text-xs">{formatDateTime(s.startsAt)}</TD>
                     <TD className="text-xs text-muted-foreground">{humanize(s.eligibility)}{s.cohort ? ` · ${s.cohort.name}` : ""}{s.project ? ` · ${s.project.name}` : ""}</TD>
                     <TD><StatusBadge status={s.status} /></TD>
-                    <TD>{canManage ? <span className="font-mono">{s._count.records}</span> : s.myRecord ? <StatusBadge status={s.myRecord.status} /> : <span className="text-xs text-muted-foreground">Not checked in</span>}</TD>
+                    <TD>{canManage ? <span className="tabular-nums">{s._count.records}</span> : s.myRecord ? <StatusBadge status={s.myRecord.status} /> : <span className="text-xs text-muted-foreground">Not checked in</span>}</TD>
                   </TR>
                 ))}
               </TBody>

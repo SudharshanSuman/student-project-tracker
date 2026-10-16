@@ -59,9 +59,9 @@ export function Stat({ label, value, hint, icon, tone = "default" }: { label: st
     <div className="flex flex-col gap-2 rounded-lg border bg-card p-4">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{label}</span>
-        <span className={cn(tone === "success" && "text-success", tone === "warning" && "text-warning", tone === "default" && "text-primary")}>{icon}</span>
+        <span className={cn(tone === "success" && "text-success", tone === "warning" && "text-warning", tone === "default" && "text-link")}>{icon}</span>
       </div>
-      <div className="font-mono text-2xl font-semibold tabular-nums">{value}</div>
+      <div className="tabular-nums text-2xl font-semibold tabular-nums">{value}</div>
       {hint ? <div className="text-xs text-muted-foreground">{hint}</div> : null}
     </div>
   );
@@ -79,7 +79,7 @@ export function Field({ label, htmlFor, error, hint, children }: { label: string
       </label>
       {children}
       {error ? (
-        <p role="alert" className="text-xs text-red-400">
+        <p role="alert" className="text-xs text-destructive">
           {error}
         </p>
       ) : hint ? (

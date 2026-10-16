@@ -35,7 +35,7 @@ export function QrPanel({ id, open }: { id: string; open: boolean }) {
     try {
       const r = await api<{ token: string; expiresAt: string }>(`/attendance/sessions/${id}/qr`);
       const url = `${window.location.origin}/attendance/check-in?token=${encodeURIComponent(r.token)}`;
-      setSvg(await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#090D16", light: "#F9FAFB" } }));
+      setSvg(await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#000000", light: "#FFFFFF" } }));
       setExpiresAt(new Date(r.expiresAt).getTime());
       setError(null);
     } catch (e) {
@@ -61,10 +61,10 @@ export function QrPanel({ id, open }: { id: string; open: boolean }) {
     <Card>
       <CardHeader><CardTitle>Check-in QR</CardTitle></CardHeader>
       <CardContent>
-        {!open ? <p className="text-sm text-muted-foreground">Open the session to display a QR code.</p> : error ? <p className="text-sm text-red-400">{error}</p> : svg ? (
+        {!open ? <p className="text-sm text-muted-foreground">Open the session to display a QR code.</p> : error ? <p className="text-sm text-destructive">{error}</p> : svg ? (
           <div className="space-y-2">
             <div className="mx-auto max-w-[280px] overflow-hidden rounded-md bg-white p-2" role="img" aria-label="Attendance QR code" dangerouslySetInnerHTML={{ __html: svg }} />
-            <p className="text-center font-mono text-xs text-muted-foreground">Rotates in {remaining}s · signed, short-lived token</p>
+            <p className="text-center tabular-nums text-xs text-muted-foreground">Rotates in {remaining}s · signed, short-lived token</p>
           </div>
         ) : <p className="text-sm text-muted-foreground">Generating…</p>}
       </CardContent>

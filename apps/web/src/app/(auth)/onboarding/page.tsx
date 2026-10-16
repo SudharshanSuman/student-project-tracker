@@ -78,7 +78,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Onboarding</CardTitle>
-          <CardDescription>Open the invitation link from your email to create your account, or <Link className="text-primary" href="/login">sign in</Link>.</CardDescription>
+          <CardDescription>Open the invitation link from your email to create your account, or <Link className="text-link" href="/login">sign in</Link>.</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -94,11 +94,11 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
           <li className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-success" /> Account created</li>
           {STEPS[me.role].map((s) => (
             <li key={s.href}>
-              <Link href={s.href} className="flex items-center gap-2 hover:text-primary"><Circle className="h-4 w-4 text-muted-foreground" /> {s.label}</Link>
+              <Link href={s.href} className="flex items-center gap-2 hover:text-link"><Circle className="h-4 w-4 text-muted-foreground" /> {s.label}</Link>
             </li>
           ))}
         </ul>
-        <Link href="/dashboard" className="mt-5 inline-block text-sm text-primary">Go to dashboard →</Link>
+        <Link href="/dashboard" className="mt-5 inline-block text-sm text-link">Go to dashboard →</Link>
       </CardContent>
     </Card>
   );

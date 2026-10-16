@@ -37,7 +37,7 @@ function NavList({ role, onNavigate }: { role: Role; onNavigate?: () => void }) 
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                        active && "bg-primary/15 text-foreground",
+                        active && "bg-muted font-medium text-foreground",
                       )}
                     >
                       <Icon className={cn("h-4 w-4", active && "text-primary")} />
@@ -56,7 +56,7 @@ function NavList({ role, onNavigate }: { role: Role; onNavigate?: () => void }) 
 function Brand() {
   return (
     <Link href="/dashboard" className="flex items-center gap-2 px-5 py-4">
-      <span className="grid h-7 w-7 place-items-center rounded-md bg-primary font-mono text-xs font-bold">IIC</span>
+      <span className="grid h-7 w-7 place-items-center bg-foreground tabular-nums text-background text-xs font-bold">IIC</span>
       <span className="text-sm font-semibold">Innovation Cell</span>
     </Link>
   );
@@ -66,7 +66,7 @@ export function Sidebar({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 overflow-y-auto border-r bg-card/40 lg:block">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 overflow-y-auto border-r bg-background lg:block">
         <Brand />
         <NavList role={role} />
       </aside>
@@ -81,7 +81,7 @@ export function Sidebar({ role }: { role: Role }) {
       </button>
       {open ? (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-foreground/40" onClick={() => setOpen(false)} />
           <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto border-r bg-card">
             <div className="flex items-center justify-between pr-3">
               <Brand />

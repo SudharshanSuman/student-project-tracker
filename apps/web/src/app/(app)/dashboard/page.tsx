@@ -80,7 +80,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
       />
 
       {/* TOP */}
-      <section aria-label="Key metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-label="Key metrics" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Active projects" value={m.activeProjects} icon={<FolderKanban className="h-4 w-4" />} hint={`${m.registeredStudents} students · ${m.activeMentors} mentors`} />
         <Stat
           label="Task completion"
@@ -99,9 +99,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
         />
       </section>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-4">
         {/* MAIN */}
-        <div className="grid gap-4 md:grid-cols-2 xl:col-span-3">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:col-span-3">
           <Card>
             <CardHeader>
               <CardTitle>Project portfolio</CardTitle>
@@ -119,7 +119,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                Milestone approvals <Link href="/milestones?status=SUBMITTED" className="text-xs font-normal text-primary">Review queue →</Link>
+                Milestone approvals <Link href="/milestones?status=SUBMITTED" className="text-xs font-normal text-link">Review queue →</Link>
               </CardTitle>
               <CardDescription>{m.pendingApprovals} awaiting mentor/admin decision</CardDescription>
             </CardHeader>
@@ -130,7 +130,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
                 d.deadlines.milestones.map((ms) => (
                   <div key={ms.id} className="flex items-center justify-between text-sm">
                     <span className="truncate">{ms.title} <span className="text-muted-foreground">· {ms.project.name}</span></span>
-                    <span className="font-mono text-xs text-muted-foreground">{formatDate(ms.dueDate)}</span>
+                    <span className="tabular-nums text-xs text-muted-foreground">{formatDate(ms.dueDate)}</span>
                   </div>
                 ))
               )}
@@ -149,7 +149,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
                   <Link key={p.id} href={`/projects/${p.id}`} className="flex items-center justify-between gap-2 rounded-md px-1 py-0.5 text-sm hover:bg-muted">
                     <span className="truncate">{p.name}</span>
                     <span className="flex shrink-0 items-center gap-2">
-                      <span className="font-mono text-xs text-muted-foreground">{p.overdueTasks ?? 0} overdue</span>
+                      <span className="tabular-nums text-xs text-muted-foreground">{p.overdueTasks ?? 0} overdue</span>
                       <HealthBadge health={p.health} />
                     </span>
                   </Link>
@@ -160,14 +160,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
         </div>
 
         {/* SIDE */}
-        <aside className="grid content-start gap-4">
+        <aside className="grid min-w-0 grid-cols-1 content-start gap-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Headphones className="h-4 w-4 text-primary" /> Discord</CardTitle>
+              <CardTitle className="flex items-center gap-2"><Headphones className="h-4 w-4 text-link" /> Discord</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
               {!d.discord.configured ? (
-                <p>Not connected. An admin can configure the bot in <Link className="text-primary" href="/admin/integrations">Integrations</Link>.</p>
+                <p>Not connected. An admin can configure the bot in <Link className="text-link" href="/admin/integrations">Integrations</Link>.</p>
               ) : d.discord.integration ? (
                 <div className="space-y-1">
                   <StatusBadge status={d.discord.integration.status} />
@@ -180,24 +180,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary" /> Upcoming events</CardTitle>
+              <CardTitle className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-link" /> Upcoming events</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {d.upcomingEvents.length === 0 ? <p className="text-xs text-muted-foreground">Nothing scheduled.</p> : d.upcomingEvents.map((e) => (
                 <div key={e.id} className="text-sm">
                   <p className="truncate">{e.title}</p>
-                  <p className="font-mono text-[11px] text-muted-foreground">{formatDateTime(e.startsAt)}{e.location ? ` · ${e.location}` : ""}</p>
+                  <p className="tabular-nums text-[11px] text-muted-foreground">{formatDateTime(e.startsAt)}{e.location ? ` · ${e.location}` : ""}</p>
                 </div>
               ))}
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><QrCode className="h-4 w-4 text-primary" /> Attendance sessions</CardTitle>
+              <CardTitle className="flex items-center gap-2"><QrCode className="h-4 w-4 text-link" /> Attendance sessions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {d.openSessions.length === 0 ? <p className="text-xs text-muted-foreground">No pending sessions.</p> : d.openSessions.map((s) => (
-                <Link key={s.id} href="/attendance" className="flex items-center justify-between text-sm hover:text-primary">
+                <Link key={s.id} href="/attendance" className="flex items-center justify-between text-sm hover:text-link">
                   <span className="truncate">{s.name}</span>
                   <StatusBadge status={s.status} />
                 </Link>
@@ -206,13 +206,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">Notifications <Link href="/notifications" className="text-xs font-normal text-primary">All →</Link></CardTitle>
+              <CardTitle className="flex items-center justify-between">Notifications <Link href="/notifications" className="text-xs font-normal text-link">All →</Link></CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {d.notifications.length === 0 ? <p className="text-xs text-muted-foreground">You are all caught up.</p> : d.notifications.map((n) => (
-                <Link key={n.id} href={n.link ?? "/notifications"} className="block text-sm hover:text-primary">
+                <Link key={n.id} href={n.link ?? "/notifications"} className="block text-sm hover:text-link">
                   <span className={n.readAt ? "text-muted-foreground" : ""}>{n.title}</span>
-                  <span className="block font-mono text-[11px] text-muted-foreground">{relativeTime(n.createdAt)}</span>
+                  <span className="block tabular-nums text-[11px] text-muted-foreground">{relativeTime(n.createdAt)}</span>
                 </Link>
               ))}
             </CardContent>
@@ -221,7 +221,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
       </div>
 
       {/* BOTTOM */}
-      <section className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><Trophy className="h-4 w-4 text-warning" /> Hackathon leaderboard</CardTitle>
@@ -229,8 +229,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
           <CardContent className="space-y-1.5">
             {d.leaderboard.length === 0 ? <p className="text-xs text-muted-foreground">No finalist or winner outcomes recorded.</p> : d.leaderboard.map((r, i) => (
               <div key={r.projectId} className="flex items-center justify-between text-sm">
-                <span className="truncate"><span className="mr-2 font-mono text-muted-foreground">{i + 1}</span>{r.name}</span>
-                <span className="font-mono text-xs">{r.wins}W · {r.finals}F</span>
+                <span className="truncate"><span className="mr-2 tabular-nums text-muted-foreground">{i + 1}</span>{r.name}</span>
+                <span className="tabular-nums text-xs">{r.wins}W · {r.finals}F</span>
               </div>
             ))}
           </CardContent>
@@ -244,14 +244,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
             {d.funding === null ? <p className="text-xs text-muted-foreground">Funding details are restricted to leads and staff.</p> : d.funding.length === 0 ? <p className="text-xs text-muted-foreground">No funding recorded.</p> : d.funding.map((f) => (
               <div key={`${f.currency}-${f.verification}-${f.source}`} className="flex items-center justify-between gap-2">
                 <span className="text-muted-foreground">{humanize(f.source)}</span>
-                <span className="flex items-center gap-2"><span className="font-mono">{formatMoney(f.amount, f.currency)}</span><StatusBadge status={f.verification} /></span>
+                <span className="flex items-center gap-2"><span className="tabular-nums">{formatMoney(f.amount, f.currency)}</span><StatusBadge status={f.verification} /></span>
               </div>
             ))}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Activity className="h-4 w-4 text-primary" /> Activity timeline</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Activity className="h-4 w-4 text-link" /> Activity timeline</CardTitle>
             <CardDescription>Tasks completed per week (8 weeks)</CardDescription>
           </CardHeader>
           <CardContent>
@@ -268,13 +268,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> Reports</CardTitle>
+            <CardTitle className="flex items-center gap-2"><FileText className="h-4 w-4 text-link" /> Reports</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1.5 text-sm">
             {me.role === "ADMIN" || me.role === "MENTOR" ? (
               d.reports.length ? d.reports.map((r) => (
                 <div key={r.id} className="flex items-center justify-between gap-2"><span className="truncate">{r.title}</span><StatusBadge status={r.status} /></div>
-              )) : <p className="text-xs text-muted-foreground">No reports generated yet. <Link href="/reports" className="text-primary">Reports →</Link></p>
+              )) : <p className="text-xs text-muted-foreground">No reports generated yet. <Link href="/reports" className="text-link">Reports →</Link></p>
             ) : (
               <p className="text-xs text-muted-foreground">Institutional reports are generated by staff.</p>
             )}
@@ -294,14 +294,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: SP
               <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {d.deadlines.tasks.map((t) => (
                   <li key={t.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                    <Link href={`/board?project=${t.project.id}&task=${t.id}`} className="truncate hover:text-primary">{t.title}</Link>
-                    <span className="shrink-0 font-mono text-xs text-muted-foreground">{formatDate(t.dueDate)}</span>
+                    <Link href={`/board?project=${t.project.id}&task=${t.id}`} className="truncate hover:text-link">{t.title}</Link>
+                    <span className="shrink-0 tabular-nums text-xs text-muted-foreground">{formatDate(t.dueDate)}</span>
                   </li>
                 ))}
                 {d.deadlines.competitions.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
                     <span className="flex items-center gap-1 truncate"><Trophy className="h-3 w-3 text-warning" />{c.name}</span>
-                    <span className="shrink-0 font-mono text-xs text-muted-foreground">{formatDate(c.submissionDeadline)}</span>
+                    <span className="shrink-0 tabular-nums text-xs text-muted-foreground">{formatDate(c.submissionDeadline)}</span>
                   </li>
                 ))}
               </ul>

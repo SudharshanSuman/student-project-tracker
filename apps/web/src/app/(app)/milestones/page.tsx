@@ -33,8 +33,8 @@ export default async function MilestonesPage({ searchParams }: { searchParams: P
       <nav className="mb-4 flex flex-wrap gap-1" aria-label="Filter by status">
         {tabs.map((t) => (
           <Link key={t.label} href={t.key ? `/milestones?status=${t.key}` : "/milestones"} aria-current={status === t.key ? "page" : undefined}
-            className={cn("rounded-md border px-3 py-1 text-xs", status === t.key ? "border-primary/60 bg-primary/15" : "hover:bg-muted")}>
-            {t.label}{t.key ? <span className="ml-1 font-mono text-muted-foreground">{data.counts[t.key] ?? 0}</span> : null}
+            className={cn("rounded-md border px-3 py-1 text-xs", status === t.key ? "border-foreground bg-foreground text-background" : "hover:bg-muted")}>
+            {t.label}{t.key ? <span className="ml-1 tabular-nums text-muted-foreground">{data.counts[t.key] ?? 0}</span> : null}
           </Link>
         ))}
       </nav>
@@ -48,12 +48,12 @@ export default async function MilestonesPage({ searchParams }: { searchParams: P
               <TBody>
                 {data.milestones.map((m) => (
                   <TR key={m.id}>
-                    <TD><Link className="font-medium hover:text-primary" href={`/milestones?${status ? `status=${status}&` : ""}open=${m.id}`}>{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-primary">GATE</span> : null}</TD>
-                    <TD><Link className="hover:text-primary" href={`/projects/${m.project.id}`}>{m.project.name}</Link></TD>
+                    <TD><Link className="font-medium hover:text-link" href={`/milestones?${status ? `status=${status}&` : ""}open=${m.id}`}>{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
+                    <TD><Link className="hover:text-link" href={`/projects/${m.project.id}`}>{m.project.name}</Link></TD>
                     <TD className="text-xs text-muted-foreground">{STAGE_LABELS[m.stage]}</TD>
                     <TD><StatusBadge status={m.status} /></TD>
                     <TD className="text-xs text-muted-foreground">{m.submissions[0] ? `${m.submissions[0].submittedBy.name} · ${relativeTime(m.submissions[0].submittedAt)}` : "—"}</TD>
-                    <TD className="font-mono text-xs">{formatDate(m.dueDate)}</TD>
+                    <TD className="tabular-nums text-xs">{formatDate(m.dueDate)}</TD>
                   </TR>
                 ))}
               </TBody>

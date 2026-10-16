@@ -8,14 +8,14 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 
-export const viewport: Viewport = { themeColor: "#090D16", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#FFFFFF", colorScheme: "light" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body>
         {children}
-        <Toaster theme="dark" position="bottom-right" richColors closeButton />
+        <Toaster theme="light" position="bottom-right" richColors closeButton />
       </body>
     </html>
   );

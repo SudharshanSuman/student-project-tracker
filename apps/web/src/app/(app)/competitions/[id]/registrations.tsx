@@ -110,7 +110,7 @@ function VerifyOutcome({ r }: { r: Registration }) {
           const ok = await run(() => api(`/competition-registrations/${r.id}/verify-outcome`, { body: { note } }), "Outcome verified");
           if (ok !== undefined) setOpen(false);
         }}>
-          {r.outcomeEvidenceUrl ? <a className="text-xs text-primary hover:underline" href={r.outcomeEvidenceUrl} target="_blank" rel="noopener noreferrer">Open submitted evidence</a> : <p className="text-xs text-muted-foreground">No evidence link was submitted.</p>}
+          {r.outcomeEvidenceUrl ? <a className="text-xs text-link hover:underline" href={r.outcomeEvidenceUrl} target="_blank" rel="noopener noreferrer">Open submitted evidence</a> : <p className="text-xs text-muted-foreground">No evidence link was submitted.</p>}
           <Field label="Verification note" htmlFor="v-note"><Textarea id="v-note" rows={3} required value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Checked the official results page" /></Field>
           <div className="flex justify-end"><Button disabled={pending || !note.trim()}>Verify outcome</Button></div>
         </form>
@@ -142,7 +142,7 @@ export function Registrations({ competitionId, registrations, registrable }: { c
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-3 text-xs">
-              {[["Repo", r.submissionRepoUrl], ["Demo", r.demoUrl], ["Pitch deck", r.pitchDeckUrl]].map(([l, u]) => u ? <a key={l} href={u} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{l}</a> : null)}
+              {[["Repo", r.submissionRepoUrl], ["Demo", r.demoUrl], ["Pitch deck", r.pitchDeckUrl]].map(([l, u]) => u ? <a key={l} href={u} target="_blank" rel="noopener noreferrer" className="text-link hover:underline">{l}</a> : null)}
             </div>
             {r.mentorNotes ? <p className="mt-2 rounded bg-muted px-2 py-1 text-xs"><span className="font-medium">Mentor notes:</span> {r.mentorNotes}</p> : null}
             <div className="mt-2 flex flex-wrap gap-2">

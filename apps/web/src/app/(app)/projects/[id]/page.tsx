@@ -75,12 +75,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <CardContent className="space-y-3 text-sm">
               <p className="whitespace-pre-wrap text-muted-foreground">{p.description}</p>
               <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div><dt className="text-xs text-muted-foreground">Tasks</dt><dd className="font-mono">{p.doneTasks ?? 0}/{p.totalTasks ?? 0}{completion !== null ? ` (${completion}%)` : ""}</dd></div>
-                <div><dt className="text-xs text-muted-foreground">Overdue</dt><dd className="font-mono">{p.overdueTasks ?? 0}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Tasks</dt><dd className="tabular-nums">{p.doneTasks ?? 0}/{p.totalTasks ?? 0}{completion !== null ? ` (${completion}%)` : ""}</dd></div>
+                <div><dt className="text-xs text-muted-foreground">Overdue</dt><dd className="tabular-nums">{p.overdueTasks ?? 0}</dd></div>
                 <div><dt className="text-xs text-muted-foreground">Mentor</dt><dd>{p.mentor?.name ?? "Unassigned"}</dd></div>
                 <div>
                   <dt className="text-xs text-muted-foreground">Repository</dt>
-                  <dd>{p.repoUrl ? <a href={p.repoUrl} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-primary">Open <ExternalLink className="h-3 w-3" /></a> : "—"}</dd>
+                  <dd>{p.repoUrl ? <a href={p.repoUrl} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-link">Open <ExternalLink className="h-3 w-3" /></a> : "—"}</dd>
                 </div>
               </dl>
             </CardContent>
@@ -102,10 +102,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   <TBody>
                     {p.milestones.map((m) => (
                       <TR key={m.id}>
-                        <TD><Link href={`/milestones?open=${m.id}`} className="hover:text-primary">{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-primary">GATE</span> : null}</TD>
+                        <TD><Link href={`/milestones?open=${m.id}`} className="hover:text-link">{m.title}</Link>{m.isStageGate ? <span className="ml-2 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] text-link">GATE</span> : null}</TD>
                         <TD className="text-xs text-muted-foreground">{STAGE_LABELS[m.stage]}</TD>
                         <TD><StatusBadge status={m.status} /></TD>
-                        <TD className="font-mono text-xs">{formatDate(m.dueDate)}</TD>
+                        <TD className="tabular-nums text-xs">{formatDate(m.dueDate)}</TD>
                       </TR>
                     ))}
                   </TBody>
@@ -136,7 +136,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   {activity.entries.map((a) => (
                     <li key={a.id} className="flex justify-between gap-2">
                       <span className="truncate"><span className="text-muted-foreground">{a.actor?.name ?? "System"}</span> · <span className="font-mono text-xs">{a.action}</span></span>
-                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground">{formatDateTime(a.createdAt)}</span>
+                      <span className="shrink-0 tabular-nums text-[11px] text-muted-foreground">{formatDateTime(a.createdAt)}</span>
                     </li>
                   ))}
                 </ul>
@@ -153,7 +153,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <CardContent className="space-y-2 text-sm">
               {p.registrations.length === 0 ? <p className="text-xs text-muted-foreground">No competition registrations.</p> : p.registrations.map((r) => (
                 <div key={r.id} className="flex items-center justify-between gap-2">
-                  <Link href={`/competitions/${r.competition.id}`} className="truncate hover:text-primary">{r.competition.name}</Link>
+                  <Link href={`/competitions/${r.competition.id}`} className="truncate hover:text-link">{r.competition.name}</Link>
                   <span className="flex items-center gap-1">
                     <StatusBadge status={r.outcome === "PENDING" ? r.status : r.outcome} />
                     {r.outcome !== "PENDING" && !r.outcomeVerifiedAt ? <span className="text-[10px] text-muted-foreground">unverified</span> : null}
@@ -170,7 +170,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 {p.funding.length === 0 ? <p className="text-xs text-muted-foreground">No funding recorded.</p> : p.funding.map((f) => (
                   <div key={f.id} className="flex items-center justify-between gap-2">
                     <span className="truncate">{f.title} <span className="text-xs text-muted-foreground">· {humanize(f.source)}</span></span>
-                    <span className="flex items-center gap-1.5"><span className="font-mono text-xs">{formatMoney(f.amount, f.currency)}</span><StatusBadge status={f.verification} /></span>
+                    <span className="flex items-center gap-1.5"><span className="tabular-nums text-xs">{formatMoney(f.amount, f.currency)}</span><StatusBadge status={f.verification} /></span>
                   </div>
                 ))}
               </CardContent>
@@ -187,7 +187,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                   <p>Last sync {p.github.lastSyncedAt ? formatDateTime(p.github.lastSyncedAt) : "never"}</p>
                 </div>
               ) : (
-                <p>No repository linked for sync. <Link href="/github" className="text-primary">GitHub integration →</Link></p>
+                <p>No repository linked for sync. <Link href="/github" className="text-link">GitHub integration →</Link></p>
               )}
             </CardContent>
           </Card>

@@ -45,8 +45,8 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     <TD><span className="block">{u.name}</span><span className="text-xs text-muted-foreground">{u.email}</span></TD>
                     <TD className="text-xs">{ROLE_LABELS[u.role]}</TD>
                     <TD><StatusBadge status={u.status} /></TD>
-                    <TD className="font-mono text-xs">{u._count.memberships}</TD>
-                    <TD className="font-mono text-xs">{formatDateTime(u.lastLoginAt)}</TD>
+                    <TD className="tabular-nums text-xs">{u._count.memberships}</TD>
+                    <TD className="tabular-nums text-xs">{formatDateTime(u.lastLoginAt)}</TD>
                     <TD>{u.id === me.id ? <span className="text-xs text-muted-foreground">You</span> : <UserRowActions user={{ id: u.id, name: u.name, role: u.role, status: u.status }} />}</TD>
                   </TR>
                 ))}
@@ -66,7 +66,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                 {pending.map((i) => (
                   <TR key={i.id}>
                     <TD>{i.email}</TD><TD className="text-xs">{ROLE_LABELS[i.role]}</TD><TD className="text-xs">{i.project?.name ?? "—"}</TD>
-                    <TD className="text-xs">{i.invitedBy.name}</TD><TD className="font-mono text-xs">{formatDate(i.expiresAt)}</TD>
+                    <TD className="text-xs">{i.invitedBy.name}</TD><TD className="tabular-nums text-xs">{formatDate(i.expiresAt)}</TD>
                     <TD><RevokeInvitation id={i.id} email={i.email} /></TD>
                   </TR>
                 ))}

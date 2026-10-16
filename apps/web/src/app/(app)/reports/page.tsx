@@ -36,11 +36,11 @@ export default async function ReportsPage() {
                   <TR key={r.id}>
                     <TD className="max-w-[280px]">{r.title}</TD>
                     <TD className="text-xs">{REPORT_TYPE_LABELS[r.type]}</TD>
-                    <TD className="whitespace-nowrap font-mono text-xs">{r.periodStart ? `${formatDate(r.periodStart)} – ${formatDate(r.periodEnd)}` : "To date"}</TD>
+                    <TD className="whitespace-nowrap tabular-nums text-xs">{r.periodStart ? `${formatDate(r.periodStart)} – ${formatDate(r.periodEnd)}` : "To date"}</TD>
                     <TD>
                       <StatusBadge status={r.expired ? "EXPIRED" : r.status} />
                       {r.status === "QUEUED" && r.attempts > 0 ? <span className="block text-[11px] text-muted-foreground">retry {r.attempts + 1}</span> : null}
-                      {r.error && r.status !== "COMPLETED" ? <span className="block max-w-[220px] text-[11px] text-red-400">{r.error}</span> : null}
+                      {r.error && r.status !== "COMPLETED" ? <span className="block max-w-[220px] text-[11px] text-destructive">{r.error}</span> : null}
                       {r.downloadable && r.expiresAt ? <span className="block text-[11px] text-muted-foreground">until {formatDate(r.expiresAt)}</span> : null}
                     </TD>
                     <TD className="text-xs">{r.requestedBy.name}<span className="block text-muted-foreground">{formatDateTime(r.createdAt)}</span></TD>

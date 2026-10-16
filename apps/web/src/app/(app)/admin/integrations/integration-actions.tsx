@@ -351,7 +351,7 @@ export function ConfigureWeightsDialog({
           <div>
             <div className="flex justify-between mb-1">
               <span>Voice Attendance / Presence ({Math.round(voice * 100)}%)</span>
-              <span className="font-mono text-xs">{voice}</span>
+              <span className="tabular-nums text-xs">{voice}</span>
             </div>
             <input
               type="range"
@@ -366,7 +366,7 @@ export function ConfigureWeightsDialog({
           <div>
             <div className="flex justify-between mb-1">
               <span>Message Activity ({Math.round(messages * 100)}%)</span>
-              <span className="font-mono text-xs">{messages}</span>
+              <span className="tabular-nums text-xs">{messages}</span>
             </div>
             <input
               type="range"
@@ -381,7 +381,7 @@ export function ConfigureWeightsDialog({
           <div>
             <div className="flex justify-between mb-1">
               <span>Task Progress / Completion ({Math.round(tasks * 100)}%)</span>
-              <span className="font-mono text-xs">{tasks}</span>
+              <span className="tabular-nums text-xs">{tasks}</span>
             </div>
             <input
               type="range"

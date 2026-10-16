@@ -120,7 +120,7 @@ export default async function IntegrationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Headphones className="h-4 w-4 text-primary" /> Discord Bot
+              <Headphones className="h-4 w-4 text-link" /> Discord Bot
             </CardTitle>
             <div className="flex gap-2">
               <ConfigureDiscordDialog initialData={d.discord.integration} />
@@ -269,13 +269,13 @@ export default async function IntegrationsPage() {
               </div>
               <div>
                 <span className="text-muted-foreground block">Workers</span>
-                <span className="font-mono font-medium text-foreground">
+                <span className="font-medium tabular-nums text-foreground">
                   {d.queue.workersCount ?? 3} active
                 </span>
               </div>
               <div>
                 <span className="text-muted-foreground block">Pending Jobs</span>
-                <span className="font-mono font-medium text-foreground">
+                <span className="font-medium tabular-nums text-foreground">
                   {d.queue.pendingJobsCount ?? 0}
                 </span>
               </div>
@@ -289,7 +289,7 @@ export default async function IntegrationsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Database className="h-4 w-4 text-primary" /> Team Engagement Index
+              <Database className="h-4 w-4 text-link" /> Team Engagement Index
             </CardTitle>
             <ConfigureWeightsDialog initialWeights={w} />
           </CardHeader>
@@ -331,7 +331,7 @@ export default async function IntegrationsPage() {
                   <TR key={a.id}>
                     <TD className="font-medium">{a.project.name}</TD>
                     <TD className="text-xs text-muted-foreground">{a.reason}</TD>
-                    <TD className="font-mono text-xs">{formatDateTime(a.createdAt)}</TD>
+                    <TD className="tabular-nums text-xs">{formatDateTime(a.createdAt)}</TD>
                     <TD className="text-right space-x-2">
                       <ReviewAlertButton alertId={a.id} status="RESOLVED" />
                       <ReviewAlertButton alertId={a.id} status="DISMISSED" />
@@ -355,7 +355,7 @@ export default async function IntegrationsPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-md border p-3 space-y-2">
               <p className="font-medium text-foreground flex items-center gap-1.5">
-                <Headphones className="h-3.5 w-3.5 text-primary" /> Discord Bot Setup Requirements
+                <Headphones className="h-3.5 w-3.5 text-link" /> Discord Bot Setup Requirements
               </p>
               <ol className="list-decimal space-y-1 pl-4">
                 <li>Create application in <span className="font-mono text-foreground">discord.com/developers/applications</span>.</li>

@@ -25,7 +25,7 @@ export function ResetForm({ token }: { token: string }) {
     return (
       <Card>
         <CardContent className="pt-4 text-sm text-muted-foreground">
-          This reset link is incomplete. <Link className="text-primary" href="/forgot-password">Request a new one</Link>.
+          This reset link is incomplete. <Link className="text-link" href="/forgot-password">Request a new one</Link>.
         </CardContent>
       </Card>
     );
@@ -56,7 +56,7 @@ export function ResetForm({ token }: { token: string }) {
           <Field label="Confirm password" htmlFor="confirm" error={formState.errors.confirm?.message}>
             <Input id="confirm" type="password" autoComplete="new-password" {...register("confirm")} />
           </Field>
-          {error ? <p role="alert" className="text-xs text-red-400">{error}</p> : null}
+          {error ? <p role="alert" className="text-xs text-destructive">{error}</p> : null}
           <Button className="w-full" disabled={formState.isSubmitting}>Update password</Button>
         </form>
       </CardContent>

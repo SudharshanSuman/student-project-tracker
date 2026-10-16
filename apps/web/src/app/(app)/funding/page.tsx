@@ -59,11 +59,11 @@ export default async function FundingPage() {
                 {d.awards.map((a) => (
                   <TR key={a.id}>
                     <TD>{a.title}<span className="block text-xs text-muted-foreground">{a.registration ? `${a.registration.competition.name} · ` : ""}recorded by {a.createdBy.name}</span></TD>
-                    <TD><Link href={`/projects/${a.project.id}`} className="hover:text-primary">{a.project.name}</Link></TD>
+                    <TD><Link href={`/projects/${a.project.id}`} className="hover:text-link">{a.project.name}</Link></TD>
                     <TD className="text-xs">{humanize(a.source)}</TD>
-                    <TD className="text-right font-mono">{formatMoney(a.amount, a.currency)}</TD>
+                    <TD className="text-right tabular-nums">{formatMoney(a.amount, a.currency)}</TD>
                     <TD><StatusBadge status={a.verification} />{a.verifiedBy ? <span className="block text-[11px] text-muted-foreground">{a.verifiedBy.name} · {formatDate(a.verifiedAt)}</span> : null}</TD>
-                    <TD className="font-mono text-xs">{formatDate(a.awardedAt)}</TD>
+                    <TD className="tabular-nums text-xs">{formatDate(a.awardedAt)}</TD>
                     <TD><AwardActions a={a} /></TD>
                   </TR>
                 ))}

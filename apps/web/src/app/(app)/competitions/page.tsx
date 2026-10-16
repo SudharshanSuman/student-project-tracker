@@ -48,10 +48,10 @@ export default async function CompetitionsPage({ searchParams }: { searchParams:
           <div className="grid content-start gap-3 md:grid-cols-2">
             {competitions.map((c) => (
               <Link key={c.id} href={`/competitions/${c.id}`} className="group">
-                <Card className="h-full space-y-2 p-4 transition-colors group-hover:border-primary/50">
+                <Card className="h-full space-y-2 p-4 transition-colors group-hover:border-foreground">
                   <div className="flex items-start justify-between gap-2">
                     <div><h2 className="font-semibold">{c.name}</h2><p className="text-xs text-muted-foreground">{c.organizer}</p></div>
-                    <span className="whitespace-nowrap font-mono text-xs text-muted-foreground">{c.submissionDeadline ? `due ${formatDate(c.submissionDeadline)}` : formatDate(c.endDate)}</span>
+                    <span className="whitespace-nowrap tabular-nums text-xs text-muted-foreground">{c.submissionDeadline ? `due ${formatDate(c.submissionDeadline)}` : formatDate(c.endDate)}</span>
                   </div>
                   {c.description ? <p className="line-clamp-2 text-sm text-muted-foreground">{c.description}</p> : null}
                   <div className="space-y-1 border-t pt-2 text-xs">
@@ -71,7 +71,7 @@ export default async function CompetitionsPage({ searchParams }: { searchParams:
           </div>
         )}
         <Card className="h-fit">
-          <CardHeader><CardTitle className="flex items-center gap-2"><Medal className="h-4 w-4 text-primary" /> Leaderboard</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Medal className="h-4 w-4 text-link" /> Leaderboard</CardTitle></CardHeader>
           <CardContent className="p-0">
             {leaderboard.length === 0 ? <p className="px-4 pb-4 text-sm text-muted-foreground">No verified results yet.</p> : (
               <Table>
@@ -79,10 +79,10 @@ export default async function CompetitionsPage({ searchParams }: { searchParams:
                 <TBody>
                   {leaderboard.slice(0, 15).map((r) => (
                     <TR key={r.projectId}>
-                      <TD className="font-mono text-xs">{r.rank}</TD>
+                      <TD className="tabular-nums text-xs">{r.rank}</TD>
                       <TD>{r.projectName}{r.cohort ? <span className="block text-[11px] text-muted-foreground">{r.cohort}</span> : null}</TD>
-                      <TD className="text-right font-mono text-xs">{r.winners} / {r.finalists} / {r.participations}</TD>
-                      <TD className="text-right font-mono font-semibold">{r.points}</TD>
+                      <TD className="text-right tabular-nums text-xs">{r.winners} / {r.finalists} / {r.participations}</TD>
+                      <TD className="text-right tabular-nums font-semibold">{r.points}</TD>
                     </TR>
                   ))}
                 </TBody>
