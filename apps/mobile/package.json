@@ -1,0 +1,20 @@
+{
+  "name": "@iic/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Android app shell (Capacitor) that loads the IIC web app from CAP_SERVER_URL",
+  "scripts": {
+    "sync": "cap sync android",
+    "open": "cap open android",
+    "apk:debug": "cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^7.5.0",
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/core": "^7.6.9"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.6.9",
+    "typescript": "^5.9.3"
+  }
+}
