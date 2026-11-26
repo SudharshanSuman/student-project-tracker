@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@iic/shared"],
   poweredByHeader: false,
+  // Render all metadata in <head> instead of streaming it into <body> on dynamic routes.
+  // Chrome only reads the manifest link, and iOS Safari only reads its apple-mobile-web-app-*
+  // tags, from <head>; without this the app is not installable. No page uses generateMetadata,
+  // so this costs nothing.
+  htmlLimitedBots: /.*/,
   // The browser talks to the API through this same-origin proxy, so the session
   // cookie stays first-party (SameSite=Lax, httpOnly) and no CORS is needed.
   async rewrites() {
@@ -22,6 +27,8 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
         ],
       },
+      // Browsers re-check the worker script on navigation; no-cache makes a new deploy's worker take effect.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }] },
     ];
   },
 };

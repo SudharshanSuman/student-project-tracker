@@ -19,6 +19,7 @@ Full original requirements: [SPEC.md](SPEC.md). Architecture, auth model and tra
 - [Database](#database)
 - [Integrations (Discord, GitHub, email)](#integrations-discord-github-email)
 - [PDF reports](#pdf-reports)
+- [Install on any device (PWA)](#install-on-any-device-pwa)
 - [Android app](#android-app)
 - [Docker](#docker)
 - [Testing](#testing)
@@ -149,6 +150,26 @@ All three are optional — the app runs fully without any of them configured; th
 ## PDF reports
 
 Project, cohort, attendance-compliance, milestone, competition, funding and executive-summary reports render through Puppeteer against a bounded headless-Chromium pool, backed by a Postgres job queue (so no Redis dependency for this feature specifically). Jobs retry on failure, are logged, and generated PDFs expire after `REPORT_RETENTION_DAYS` (default 30). Details: [docs/REPORTS.md](docs/REPORTS.md).
+
+## Install on any device (PWA)
+
+The web app is an installable Progressive Web App: it gets its own icon and opens in its own window, with no browser bar. No app store or APK is needed.
+
+| Device | How to install |
+| --- | --- |
+| Android (Chrome) | Open the site → menu ⋮ → **Install app** (or tap the install banner) |
+| iPhone / iPad (Safari) | Open the site → Share → **Add to Home Screen** |
+| Windows / macOS / Linux / ChromeOS (Chrome or Edge) | Click the install icon in the address bar, or menu → **Install IIC Platform** |
+| Mac (Safari 17+) | File → **Add to Dock** |
+
+**Requires HTTPS.** Browsers only offer install on `https://` sites (and `http://localhost`). A LAN address such as `http://192.168.x.x:3000` is **not** installable, so deploy behind HTTPS first.
+
+How it works:
+- `public/manifest.webmanifest` holds the name, icons and standalone display.
+- `public/sw.js` is a deliberately empty service worker. Chrome needs one before it offers install, and it caches nothing, because all data is per-user and live. The app therefore has no offline mode.
+- `htmlLimitedBots` in `next.config.ts` keeps the install tags in `<head>`; without it the app silently stops being installable.
+
+Icons are rendered from `public/icon.svg` with `node apps/web/scripts/render-icons.mjs`, and the install setup is covered by `apps/web/e2e/install.spec.ts`.
 
 ## Android app
 
