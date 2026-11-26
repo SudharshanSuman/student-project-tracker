@@ -7,6 +7,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ROLE_LABELS, type Role } from "@iic/shared";
 import { api } from "@/lib/api-client";
 import { initials } from "@/lib/utils";
+import { WelcomeTour } from "@/components/guide/welcome-tour";
 
 function NotificationBell() {
   const [unread, setUnread] = useState(0);
@@ -49,7 +50,7 @@ function NotificationBell() {
   );
 }
 
-export function Topbar({ name, email, role }: { name: string; email: string; role: Role }) {
+export function Topbar({ userId, name, email, role }: { userId: string; name: string; email: string; role: Role }) {
   const router = useRouter();
   async function logout() {
     await api("/auth/logout", { method: "POST" }).catch(() => {});
@@ -58,6 +59,7 @@ export function Topbar({ name, email, role }: { name: string; email: string; rol
   }
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-2 border-b bg-background/80 px-4 backdrop-blur">
+      <WelcomeTour userId={userId} name={name} role={role} />
       <NotificationBell />
       <DropdownMenu.Root>
         <DropdownMenu.Trigger className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted" aria-label="Account menu">
