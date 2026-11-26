@@ -23,5 +23,9 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon.svg).*)"],
+  // Static PWA files must bypass the session redirect, or logged-out visitors would get
+  // the login HTML instead of the manifest/icons and the install prompt would never appear.
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|icon.svg|icon-192.png|icon-512.png|icon-maskable-512.png|apple-touch-icon.png|manifest.webmanifest|sw.js).*)",
+  ],
 };
